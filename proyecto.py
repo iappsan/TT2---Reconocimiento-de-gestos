@@ -1,4 +1,5 @@
 import cv2
+import os
 import numpy as np
 import mediapipe as mp
 import time
@@ -32,10 +33,15 @@ def invokeAction(fingers):
         keyboard.tap(Key.right)
     elif fingers == '00111':
         print ('Gesto 3')
+        os.system('explorer "https://netflix.com"')
+
     elif fingers == '01111':
         print ('Gesto 4')
+    
     elif fingers == '11111':
         print ('Gesto 5')
+        keyboard.tap(Key.space)
+
     elif fingers == '00000':
         print ('Gesto 6')
     elif fingers == '10000':
