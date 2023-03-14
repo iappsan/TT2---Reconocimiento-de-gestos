@@ -2,13 +2,18 @@ import cv2
 import os
 import numpy as np
 import mediapipe as mp
+import threading
 import time
 from pynput.keyboard import Key, Controller
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 y = 480
 x = 640
+timeInSecs = 0
+gestureSec = 0
+lastGesture = ''
 
 def arrayConv(array) -> str:
     resultStr = ''
@@ -20,14 +25,22 @@ def arrayConv(array) -> str:
     # print (resultStr)
     return resultStr
 
+def secVal(actualGesture):
+    global lastGesture
+    global gestureSec
+    if lastGesture != actualGesture:
+        lastGesture = actualGesture
+        gestureSec = timeInSecs
+    else:
+        if timeInSecs == (gestureSec + 3):
+            invokeAction(actualGesture)
+
 def invokeAction(fingers):
     keyboard = Controller()
 
     if fingers == '01000':
         print ('Gesto 1')
-        # keyboard.press(Key.ctrl)
         keyboard.tap(Key.f5)
-        # keyboard.release(Key.ctrl)
     elif fingers == '01100':
         print ('Gesto 2')
         keyboard.tap(Key.right)
@@ -69,11 +82,23 @@ def openOrNot(WRIST, FT, FB):
         return True
     else:
         return False    
+    
+def clock():
+    global timeInSecs
+    global lastGesture
+    while True:
+        print('Segundo {}, gesto {}'.format(timeInSecs, lastGesture))
+        timeInSecs = timeInSecs +1
+        time.sleep(1)
 
 def main():
 
     global x
     global y
+    global lastGesture
+
+    timer = threading.Thread(target=clock)
+    timer.start()
 
     # For webcam input:
     cap = cv2.VideoCapture(0)
@@ -97,7 +122,7 @@ def main():
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             # We need a time counter here to make the program wait for the invokes
-            time.sleep(1)
+            # time.sleep(1)
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
         
@@ -131,14 +156,14 @@ def main():
                         hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP],
                         hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_MCP]))
 
-                    invokeAction(arrayConv(fingersOpen))
+                    secVal(arrayConv(fingersOpen))
 
-                    # mp_drawing.draw_landmarks(
-                    # image,
-                    # hand_landmarks,
-                    # mp_hands.HAND_CONNECTIONS,
-                    # mp_drawing_styles.get_default_hand_landmarks_style(),
-                    # mp_drawing_styles.get_default_hand_connections_style())
+                    mp_drawing.draw_landmarks(
+                    image,
+                    hand_landmarks,
+                    mp_hands.HAND_CONNECTIONS,
+                    mp_drawing_styles.get_default_hand_landmarks_style(),
+                    mp_drawing_styles.get_default_hand_connections_style())
            
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
