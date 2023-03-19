@@ -9,8 +9,8 @@ from pynput.keyboard import Key, Controller
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
-y = 480
-x = 640
+y = 0
+x = 0
 timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
@@ -34,6 +34,7 @@ def secVal(actualGesture):
     else:
         if timeInSecs == (gestureSec + 3):
             invokeAction(actualGesture)
+            gestureSec = 0      # In order to do only one invoke
 
 def invokeAction(fingers):
     keyboard = Controller()
@@ -102,6 +103,12 @@ def main():
 
     # For webcam input:
     cap = cv2.VideoCapture(0)
+
+    # Here we get the x,y size
+    x = int (cap.get(3))
+    y = int (cap.get(4))
+    print('x: {}, y {}'.format(x,y))
+
     with mp_hands.Hands(
         model_complexity=0,
         min_detection_confidence=0.5,
@@ -121,8 +128,7 @@ def main():
             # Draw the hand annotations on the image.
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            # We need a time counter here to make the program wait for the invokes
-            # time.sleep(1)
+            
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
         
@@ -131,12 +137,21 @@ def main():
                     midFB = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_MCP]
                     newCx = int((x*wristP.x + x*midFB.x)/2)
                     newCy = int((y*wristP.y + y*midFB.y)/2)
-                    # cv2.circle(image, (newCx,newCy), 3, (100,33,200),2)  
+                    cv2.circle(image, (newCx,newCy), 3, (100,33,200),2)  
                     middlePoint = [newCx,newCy]
+                    # New point for the thumb
+                    indFB = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_MCP]
+                    thumbFB = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_CMC]
+                    newCx4T = int((x*thumbFB.x + x*1.1*indFB.x)/2)
+                    newCy4T = int((y*thumbFB.y + y*.9*indFB.y)/2)
+                    # newCx4T = int(((2*x*wristP.x/3) + x*indFB.x)/2)
+                    # newCy4T = int(((2*y*wristP.y/3) + y*indFB.y)/2)
+                    cv2.circle(image, (newCx4T,newCy4T), 3, (10,150,200),2)
+                    thumbPoint = [newCx4T,newCy4T]
 
                     fingersOpen = []
                     fingersOpen.append(openOrNot(
-                        middlePoint, 
+                        thumbPoint, 
                         hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP],
                         hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_MCP]))
                     fingersOpen.append(openOrNot(
@@ -165,6 +180,9 @@ def main():
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
            
+           # If there's no fingers then we set the last gesture as empty
+            else: 
+                lastGesture = ''
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == 27:
