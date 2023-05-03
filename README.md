@@ -1,10 +1,12 @@
 # TT2---Reconocimiento-de-gestos
 
 ## Libreias necesarias:
+We need Python 3.7.X
 Mediapipe
 numpy
 pynput
-tkinter
+tkinter (pip install tk)
+pyside6
 
 ## Descripción breve
 Se pueden reconocer y clasificar gestos básicos
