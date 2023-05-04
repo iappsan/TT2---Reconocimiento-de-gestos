@@ -27,20 +27,29 @@ menuBar.add_cascade(label="Archivo", menu=archivoMenu)
 menuBar.add_cascade(label="Ayuda", menu=ayudaMenu)
 
 # Crear funciones
-def newWindow():
+def newWindow():            # Template para nuevas ventanas
     # root.withdraw()
     top2 = Toplevel()
     top2.geometry("400x200")
     top2.title("root nueva")
     button = Button(top2, text="OK", command=top2.destroy).pack()
 
-def windowHelp():
+def windowRoot():           # Ventana principal
+    pass
+
+def windowHelp():           # Ventana de ayuda
     top = Toplevel()
     top.geometry("400x200")
     top.config(bg=defBG)
     top.title("Ayuda")
     label1 = Label(top, text="Aqui debe aparecer texto o imagenes con ayuda", bg=defBG, fg=defFontColor).pack(pady=15)
     button = Button(top, text="Cerrar", command=top.destroy).place(relx=0.4, rely=0.5)
+
+def windowConfigScene():    # Ventana de configuracion de escenario
+    top = Toplevel()
+    top.geometry("400x200")
+    top.config(bg=defBG)
+    top.title("Configura tu escenario")
 
 def windowCreateScene():
     top = Toplevel(root)
@@ -90,6 +99,7 @@ label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=d
 # button1 = Button(root, text="Otra root", command=newWindow).pack()
 b2 = Button(root, text="Abrir", command=openFile).pack(pady=(50,10))
 b3 = Button(root, text="Crear", command=windowCreateScene).pack()
-b4 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
+b4 = Button(root, text="config", command=windowConfigScene).pack()
+b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
 
 root.mainloop()
