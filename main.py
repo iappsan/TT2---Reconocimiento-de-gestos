@@ -8,23 +8,6 @@ defFontColor = "#E7E7E7"
 nombreEscenario = ""
 rutaEscenario = ""
 
-# Crear la root
-root = Tk()
-
-# Crear menu superior
-menuBar = Menu(root)
-archivoMenu = Menu(menuBar, tearoff=0)
-ayudaMenu = Menu(menuBar, tearoff=0)
-
-archivoMenu.add_command(label="Nuevo")
-archivoMenu.add_command(label="Abrir")
-archivoMenu.add_separator()
-archivoMenu.add_command(label="Salir", command=root.quit)
-
-ayudaMenu.add_command(label="Ayuda")
-
-menuBar.add_cascade(label="Archivo", menu=archivoMenu)
-menuBar.add_cascade(label="Ayuda", menu=ayudaMenu)
 
 # Crear funciones
 def newWindow():            # Template para nuevas ventanas
@@ -35,7 +18,40 @@ def newWindow():            # Template para nuevas ventanas
     button = Button(top2, text="OK", command=top2.destroy).pack()
 
 def windowRoot():           # Ventana principal
-    pass
+    root = Tk()
+
+    # Crear menu superior
+    menuBar = Menu(root)
+    archivoMenu = Menu(menuBar, tearoff=0)
+    ayudaMenu = Menu(menuBar, tearoff=0)
+
+    archivoMenu.add_command(label="Nuevo")
+    archivoMenu.add_command(label="Abrir")
+    archivoMenu.add_separator()
+    archivoMenu.add_command(label="Salir", command=root.quit)
+
+    ayudaMenu.add_command(label="Ayuda")
+
+    menuBar.add_cascade(label="Archivo", menu=archivoMenu)
+    menuBar.add_cascade(label="Ayuda", menu=ayudaMenu)
+
+    # Configurar la root principal
+    root.title("RGM OPMA") # Reconocimiento de gestos manuales para la organización y presentación de material audiovisual
+    root.geometry("500x300")
+    root.resizable(False,False)
+    root.config(bg=defBG, menu=menuBar)
+
+    # Crear un contenido principal
+    label1 = Label(root, text="Bienvenido!", bg=defBG, fg=defFontColor).pack(pady=15)
+    label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=defBG, fg=defFontColor).pack()
+
+    # button1 = Button(root, text="Otra root", command=newWindow).pack()
+    b2 = Button(root, text="Abrir", command=openFile).pack(pady=(50,10))
+    b3 = Button(root, text="Crear", command=windowCreateScene).pack()
+    b4 = Button(root, text="config", command=windowConfigScene).pack()
+    b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
+
+    root.mainloop()
 
 def windowHelp():           # Ventana de ayuda
     top = Toplevel()
@@ -51,8 +67,8 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     top.config(bg=defBG)
     top.title("Configura tu escenario")
 
-def windowCreateScene():
-    top = Toplevel(root)
+def windowCreateScene():    # Ventana de creacion de escenario
+    top = Toplevel()
     top.geometry("400x200")
     top.config(bg=defBG)
     top.title("Crear un nuevo escenario")
@@ -73,7 +89,7 @@ def windowCreateScene():
     e2 = Label(top, text=date.today(), bg=defBG, fg=defFontColor).grid(row=1, column=1)
     button = Button(top, text="Crear escenario", command=top.destroy).place(relx=0.4, rely=0.5)
 
-def openFile():
+def openFile():             # Funcion para abrir archivo de escenario
     try:
         path = filedialog.askopenfilename(
             title="Abrir escenario",
@@ -82,24 +98,12 @@ def openFile():
                 ("Archivos RGM", "*.rgm"),
             ))
         file = open(path, 'r')
+
+        ## PASAR "file" HACIA escenario.py PARA INTERACTUAR CON LOS ESCENARIOS
+
         print (file.read())
+
     except:
         print("No abriste nada")
 
-# Configurar la root principal
-root.title("RGM OPMA") # Reconocimiento de gestos manuales para la organización y presentación de material audiovisual
-root.geometry("500x300")
-root.resizable(False,False)
-root.config(bg=defBG, menu=menuBar)
-
-# Crear un contenido principal
-label1 = Label(root, text="Bienvenido!", bg=defBG, fg=defFontColor).pack(pady=15)
-label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=defBG, fg=defFontColor).pack()
-
-# button1 = Button(root, text="Otra root", command=newWindow).pack()
-b2 = Button(root, text="Abrir", command=openFile).pack(pady=(50,10))
-b3 = Button(root, text="Crear", command=windowCreateScene).pack()
-b4 = Button(root, text="config", command=windowConfigScene).pack()
-b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
-
-root.mainloop()
+windowRoot()
