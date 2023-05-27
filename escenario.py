@@ -32,12 +32,22 @@ def loadScene(args):
    
     _GEST_DICT_ = sortGestures(len(_RAW_TEXT_), _RAW_TEXT_)
 
-def updateScene(opType):                # Se utiliza cada qeu movemos algo en la configuracion del escenario
-                                        # Args: 1:add, mod, del.  2:  
+def updateScene(opType, _DATA_):        # Se utiliza cada que movemos algo en la configuracion del escenario
+    global _GEST_DICT_                  # Args: 1:add, mod, del.  2:  
+
     if opType == 1:
         print ('Add')
+        _GEST_DICT_.insert(_DATA_)
     elif opType == 2:
         print ('Mod')
+        gestFound = False
+
+        for gest in _GEST_DICT_:
+            if not gestFound:
+                if gest[0] == _DATA_[0]:
+                    gest = _DATA_
+                    gestFound = True
+
     elif opType == 3:
         print ('Del')
 
