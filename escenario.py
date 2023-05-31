@@ -1,3 +1,5 @@
+from datetime import date
+
 class Scene:
     
     _FILE_ = ''
@@ -8,8 +10,10 @@ class Scene:
 
     FILEPATH = ''               # Ruta de escenario
 
-    def __init__(self, path):
+    def __init__(self):
+        print ('Escenario creado')    
 
+    def loadScene(self, path):
         self.FILEPATH = path
         print("Leyendo escenario ...")
 
@@ -75,8 +79,8 @@ class Scene:
     def saveScene(self):
         print("Creando archivo para escenario ...")
 
-        newFile = open('.\\Escenarios\\'+self._SCENE_NAME_.replace(' ','')+'.txt','w')
-        newFile.write(self._SCENE_NAME_)
+        newFile = open('tempScenes/'+str(date.today())+self._SCENE_NAME_.replace(' ','')+'.txt','w')
+        newFile.write(self._SCENE_NAME_+'\n')
         newFile.write(self._SCENE_DATE_)
         newFile.writelines(self.separateLists(self._GEST_DICT_))
         newFile.close()
@@ -89,7 +93,7 @@ class Scene:
     def setSceneName(self, newName):
         self._SCENE_NAME_ = newName
 
-    def __del__(self):
+    def emptypls(self):
         print ('Vaciando')
         self._FILE_ = ''
         self._RAW_TEXT_ = []             # Texto crudo

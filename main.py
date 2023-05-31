@@ -9,7 +9,7 @@ from escenario import Scene
 # Globales
 defBG = "#303030"
 defFontColor = "#E7E7E7"
-currentScene = ''
+currentScene = Scene()
 tempDirectory = 'tempScenes/'
 
 
@@ -30,12 +30,23 @@ def windowHelp():           # Ventana de ayuda
     button = Button(top, text="Cerrar", command=top.destroy).place(relx=0.4, rely=0.5)
 
 def windowConfigScene():    # Ventana de configuracion de escenario
+    global currentScene
+    print ('Escenario en uso:\n'+currentScene._SCENE_NAME_)
+
+    def onClosing():    # Cuando el usuario cierra la ventana, resurge la ventana principal
+        root.iconify()
+        root.deiconify()
+        currentScene.emptypls()
+        top.destroy()
+
     root.withdraw()
     top = Toplevel()
     top.geometry("400x200")
     top.config(bg=defBG)
     top.title("Configura tu escenario")
+    top.protocol('WM_DELETE_WINDOW', onClosing)
 
+    # Cambiar accion del boton por inicio de reconocimiento
     b = Button(top, text="Iniciar reconocimiento", command=top.destroy)
     b.place(relx=0.37, rely=0.2)
 
@@ -66,10 +77,8 @@ def windowCreateScene():    # Ventana de creacion de escenario
         newFile.write(str(date.today()))
         newFile.close()
 
-        print('Listo')
-
         # Se crea el objeto Scene para poder trabajar con el en la siguiente ventana
-        currentScene = Scene(tempDirectory+str(date.today())+newName.replace(' ','')+'.txt')
+        currentScene.loadScene(tempDirectory+str(date.today())+newName.replace(' ','')+'.txt')
 
         top.destroy()
         windowConfigScene()
@@ -82,11 +91,9 @@ def windowCreateScene():    # Ventana de creacion de escenario
     button = Button(top, text="Crear escenario", command=sceneCreation)
     button.place(relx=0.4, rely=0.5)
 
-
 def openFile():             # Funcion para abrir archivo de escenario
 
     global currentScene
-    currentScene = 0
 
     try:
         path = filedialog.askopenfilename(
@@ -98,7 +105,7 @@ def openFile():             # Funcion para abrir archivo de escenario
         
         # print ('Ya se va a enviar')
         # PASAR "path" HACIA escenario.py PARA INTERACTUAR CON LOS ESCENARIOS
-        currentScene = Scene(path)
+        currentScene.loadScene(path)
         # print ('Ya se envio')
 
         print (currentScene._SCENE_NAME_)
@@ -106,6 +113,7 @@ def openFile():             # Funcion para abrir archivo de escenario
         print (len(currentScene._GEST_DICT_))
         
         # Inicializar ventana de configuracion
+        windowConfigScene()
 
     except Exception as e:
         print("No abriste nada")
