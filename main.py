@@ -40,24 +40,36 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         currentScene.emptypls()
         top.destroy()
 
-    def initRecognize():
+    def initRecognize():    # Resetea parametros para empezar o continuar el reconocimiento
         recognize.keepOpen = True
         recognize.init()
 
     root.withdraw()
     top = Toplevel()
     top.geometry("400x200")
+    top.geometry("+400+400")
     top.config(bg=defBG)
     top.title("Configura tu escenario")
     top.protocol('WM_DELETE_WINDOW', onClosing)
 
-    # Cambiar accion del boton por inicio de reconocimiento
+    def setDropdown(gestureAssigned):
+         gestureSelected = StringVar()
+         gestureSelected.set(gestureAssigned)
+
+         optGesturesMenu = OptionMenu(top, gestureSelected, *recognize.actions)
+         optGesturesMenu.pack()
+
+    for gest in currentScene._GEST_DICT_:
+        setDropdown(gest[0])
+
+    # Boton para el inicio del reconocimiento
     b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
     b.place(relx=0.37, rely=0.2)
 
 def windowCreateScene():    # Ventana de creacion de escenario
     top = Toplevel(root)
     top.geometry("400x200")
+    top.geometry("+400+400")
     top.config(bg=defBG)
     top.title("Crear un nuevo escenario")
     # frame2 = Frame(top, bd=5, relief="sunken", padx=20, pady=20).pack()
@@ -153,6 +165,7 @@ menuBar.add_cascade(label="Ayuda", menu=ayudaMenu)
 # Configurar la root principal
 root.title("RGM OPMA") # Reconocimiento de gestos manuales para la organización y presentación de material audiovisual
 root.geometry("500x300")
+root.geometry("+750+300")
 root.resizable(False,False)
 root.config(bg=defBG, menu=menuBar)
 
@@ -162,7 +175,7 @@ label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=d
 
 b2 = Button(root, text="Abrir", command=openFile).pack(pady=(50,10))
 b3 = Button(root, text="Crear", command=windowCreateScene).pack()
-b4 = Button(root, text="config", command=windowConfigScene).pack()
+# b4 = Button(root, text="config", command=windowConfigScene).pack()
 b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
 
 root.mainloop()
