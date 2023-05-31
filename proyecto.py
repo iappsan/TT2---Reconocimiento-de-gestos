@@ -15,6 +15,18 @@ timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
 keepOpen = True
+actions = ['Gesto 0','Gesto 1','Gesto 2','Gesto 3','Gesto 4','Gesto 5','Gesto 6','Gesto 7','Gesto 8']
+actionsDict = [
+    ['Gesto 0', 'Accion', 'Link'],
+    ['Gesto 1', 'Accion', 'Link'],
+    ['Gesto 2', 'Accion', 'Link'],
+    ['Gesto 3', 'Accion', 'Link'],
+    ['Gesto 4', 'Accion', 'Link'],
+    ['Gesto 5', 'Accion', 'Link'],
+    ['Gesto 6', 'Accion', 'Link'],
+    ['Gesto 7', 'Accion', 'Link'],
+    ['Gesto 8', 'Accion', 'Link']
+]
 
 #   Convertimos los booleanos en una cadena simple para ejemplificar los gestos
 def arrayConv(array) -> str:        
@@ -40,8 +52,11 @@ def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por med
 
 def invokeAction(fingers):      # Invocamos las acciones que cada gesto debe de hacer
     keyboard = Controller()
+    global actions
 
-    if fingers == '01000':
+    if fingers == '00000':
+        print ('Gesto 0')
+    elif fingers == '01000':
         print ('Gesto 1')
         keyboard.tap(Key.f5)
     elif fingers == '01100':
@@ -50,24 +65,20 @@ def invokeAction(fingers):      # Invocamos las acciones que cada gesto debe de 
     elif fingers == '00111':
         print ('Gesto 3')
         os.system('explorer "https://netflix.com"')
-
     elif fingers == '01111':
         print ('Gesto 4')
-
-    elif fingers == '00000':
-        print ('Gesto 6')
     elif fingers == '10000':
-        print ('Gesto 7')
+        print ('Gesto 5')
         keyboard.tap(Key.left)
     elif fingers == '11000':
-        print ('Gesto 8')
+        print ('Gesto 6')
     elif fingers == '10001':
-        print ('Gesto 9')
+        print ('Gesto 7')
     elif fingers == '01110':
-        print ('Gesto 10')
+        print ('Gesto 8')
 
     elif fingers == '11111':        # Con este gesto se detiene el reconocimiento
-        print ('Gesto 5')
+        print ('Gesto 9')
         global keepOpen
         keepOpen = False
         
