@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from datetime import date
 import os
+import proyecto as recognize
 
 # Importamos la clase del escenario
 from escenario import Scene
@@ -39,6 +40,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         currentScene.emptypls()
         top.destroy()
 
+    def initRecognize():
+        recognize.keepOpen = True
+        recognize.init()
+
     root.withdraw()
     top = Toplevel()
     top.geometry("400x200")
@@ -47,7 +52,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     top.protocol('WM_DELETE_WINDOW', onClosing)
 
     # Cambiar accion del boton por inicio de reconocimiento
-    b = Button(top, text="Iniciar reconocimiento", command=top.destroy)
+    b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
     b.place(relx=0.37, rely=0.2)
 
 def windowCreateScene():    # Ventana de creacion de escenario
@@ -108,9 +113,11 @@ def openFile():             # Funcion para abrir archivo de escenario
         currentScene.loadScene(path)
         # print ('Ya se envio')
 
-        print (currentScene._SCENE_NAME_)
-        print (currentScene._SCENE_DATE_)
-        print (len(currentScene._GEST_DICT_))
+        # Las siguientes 3 lineas sirven para ver le contenido de un archivo de escenario
+        # no son necesarias en la practica:
+        # print (currentScene._SCENE_NAME_)
+        # print (currentScene._SCENE_DATE_)
+        # print (len(currentScene._GEST_DICT_))
         
         # Inicializar ventana de configuracion
         windowConfigScene()

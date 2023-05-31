@@ -14,8 +14,10 @@ x = 0
 timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
+keepOpen = True
 
-def arrayConv(array) -> str:
+#   Convertimos los booleanos en una cadena simple para ejemplificar los gestos
+def arrayConv(array) -> str:        
     resultStr = ''
     for i in range(5):
         if(array[i]):
@@ -25,7 +27,7 @@ def arrayConv(array) -> str:
     # print (resultStr)
     return resultStr
 
-def secVal(actualGesture):
+def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por medio de un contador
     global lastGesture
     global gestureSec
     if lastGesture != actualGesture:
@@ -34,9 +36,9 @@ def secVal(actualGesture):
     else:
         if timeInSecs == (gestureSec + 3):
             invokeAction(actualGesture)
-            gestureSec = 0      # In order to do only one invoke
+            gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
 
-def invokeAction(fingers):
+def invokeAction(fingers):      # Invocamos las acciones que cada gesto debe de hacer
     keyboard = Controller()
 
     if fingers == '01000':
@@ -51,10 +53,6 @@ def invokeAction(fingers):
 
     elif fingers == '01111':
         print ('Gesto 4')
-    
-    elif fingers == '11111':
-        print ('Gesto 5')
-        keyboard.tap(Key.space)
 
     elif fingers == '00000':
         print ('Gesto 6')
@@ -67,14 +65,23 @@ def invokeAction(fingers):
         print ('Gesto 9')
     elif fingers == '01110':
         print ('Gesto 10')
-        keyboard.tap(Key.esc)
 
+    elif fingers == '11111':        # Con este gesto se detiene el reconocimiento
+        print ('Gesto 5')
+        global keepOpen
+        keepOpen = False
+        
+
+# Esta funcion hace una comparacion por diferencia para saber si un dedo esta abierto o no
 def openOrNot(WRIST, FT, FB):
     global y
     global x
     wristVector = np.array([WRIST[0], WRIST[1]])
     fingerTipVector = np.array([x*FT.x, y*FT.y])
     fingerBaseVector = np.array([x*FB.x, y*FB.y])
+
+    # Las siguientes dos lineas operan los vectores para calcular la diferencia
+    # entre FT (punta del dedo) hacia FB (base del dedo)
     diffFT = np.linalg.norm(wristVector-fingerTipVector)
     diffFB = np.linalg.norm(wristVector-fingerBaseVector)
     # print ('Distance: {}\n'.format(diffFT - diffFB))
@@ -84,19 +91,24 @@ def openOrNot(WRIST, FT, FB):
     else:
         return False    
     
-def clock():
-    global timeInSecs
+def clock():        # Esta funcion nace como un hilo para llevar un conteo de segundos y un registro
+    global timeInSecs       # del ultimo gesto registrado
     global lastGesture
+    global keepOpen
     while True:
         print('Segundo {}, gesto {}'.format(timeInSecs, lastGesture))
         timeInSecs = timeInSecs +1
         time.sleep(1)
+        if not keepOpen:
+            print ('Fin de reconocimiento')
+            break
 
-def main():
+def init():
 
     global x
     global y
     global lastGesture
+    global keepOpen
 
     timer = threading.Thread(target=clock)
     timer.start()
@@ -113,7 +125,7 @@ def main():
         model_complexity=0,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
-        while cap.isOpened():
+        while cap.isOpened() and keepOpen:
             success, image = cap.read()
             if not success:
                 print("Ignoring empty camera frame.")
@@ -180,14 +192,16 @@ def main():
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
            
-           # If there's no fingers then we set the last gesture as empty
+            # Si no se detecta ninguna mano, seteamos el ultimo gesto reconocido a vacio
             else: 
                 lastGesture = ''
-            # Flip the image horizontally for a selfie-view display.
-            cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
-            if cv2.waitKey(5) & 0xFF == 27:
+            # Voltea la image horizontalmente
+            cv2.imshow('RGM', cv2.flip(image, 1))
+            if cv2.waitKey(5) & 0xFF == ord('q'):       # Si presionamos la tecla Q, salimos
+                keepOpen = False
                 break
         cap.release()
+        cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    main()
+    init()
