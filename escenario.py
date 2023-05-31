@@ -8,30 +8,32 @@ class Scene:
 
     FILEPATH = ''               # Ruta de escenario
 
-    def sortGestures(self, len, RAW_DATA):    # Acomoda y normaliza las asociaciones en un arreglo
-        i = 2                           # Porque en la posicion 2 comienzan las asociaciones
-        SORT_DATA = []
-        while i < len:
-            SORT_DATA.insert(len(SORT_DATA),RAW_DATA[i].split(','))
-            i += 1
-        return SORT_DATA
+    def __init__(self, path):
 
-    def _init_(self, file):
-
+        self.FILEPATH = path
         print("Leyendo escenario ...")
 
-        self._FILE_ = file
-        CONTENIDO = file.readlines()
+        self._FILE_ = open(path, 'r')
+        CONTENIDO = self._FILE_.readlines()
+
         for line in CONTENIDO:
             self._RAW_TEXT_.append(line.replace('\n',''))
-        file.close()
+        self._FILE_.close()
 
         self._SCENE_NAME_ = self._RAW_TEXT_[0]         # Cargamos el titulo
         self._SCENE_DATE_ = self._RAW_TEXT_[1]         # Cargamos la fecha
     
         self._GEST_DICT_ = self.sortGestures(len(self._RAW_TEXT_), self._RAW_TEXT_)
 
-    
+        print ('... Escenario cargado')
+
+    def sortGestures(self, leng, RAW_DATA):      # Acomoda y normaliza las asociaciones en un arreglo
+        i = 2                                   # Porque en la posicion 2 comienzan las asociaciones
+        SORT_DATA = []
+        while i < leng:
+            SORT_DATA.insert(len(SORT_DATA),RAW_DATA[i].split(','))
+            i += 1
+        return SORT_DATA
 
     def updateSceneGestures(self, opType, _DATA_):      # Se utiliza cada que movemos algo en la configuracion del escenario
                                                 # Args: 1:add, mod, del.  2:  
@@ -86,3 +88,12 @@ class Scene:
 
     def setSceneName(self, newName):
         self._SCENE_NAME_ = newName
+
+    def __del__(self):
+        print ('Vaciando')
+        self._FILE_ = ''
+        self._RAW_TEXT_ = []             # Texto crudo
+        self._SCENE_NAME_ = ''           # Nombre de escenario
+        self._SCENE_DATE_ = ''           # Fecha de creacion
+        self._GEST_DICT_ = []            # Diccionario de gestos con enlaces
+        self.FILEPATH = ''               # Ruta de escenario
