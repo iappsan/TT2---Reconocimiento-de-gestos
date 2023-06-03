@@ -9,6 +9,4 @@ tkinter (pip install tk)
 pyside6
 
 ## Descripción breve
-Se pueden reconocer y clasificar gestos básicos
-Se pueden invocar funciones básicas solo para el uso en powerpoint
-Hemos empezado la creación de la interfaz gráfica
+EStamos detallando la configuración de escenarios respecto a los vinculos con las acciones
