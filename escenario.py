@@ -43,7 +43,7 @@ class Scene:
                                                 # Args: 1:add, mod, del.  2:  
         if opType == 1:
             print ('Add')
-            self._GEST_DICT_.insert(_DATA_)      # Agregamos al final del diccionario el nuevo gesto
+            self._GEST_DICT_.insert(len(self._GEST_DICT_),_DATA_)      # Agregamos al final del diccionario el nuevo gesto
 
         elif opType == 2:
             print ('Mod')
@@ -64,6 +64,7 @@ class Scene:
                 if not gestFound:
                     if gest[0] == _DATA_[0]:        # Si se encuentra el gesto se elimina segun el
                         self._GEST_DICT_.pop(i)     # indice en el que se encuentre
+                        gestFound = True
                     else:
                         i+=1
 

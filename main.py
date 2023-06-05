@@ -32,6 +32,9 @@ def windowHelp():           # Ventana de ayuda
 
 def windowConfigScene():    # Ventana de configuracion de escenario
     global currentScene
+    _temp_list = []
+    rowNum = 1
+
     print ('Escenario en uso:\n'+currentScene._SCENE_NAME_)
 
     def onClosing():    # Cuando el usuario cierra la ventana, resurge la ventana principal
@@ -46,25 +49,67 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     root.withdraw()
     top = Toplevel()
-    top.geometry("400x200")
-    top.geometry("+400+400")
+    top.geometry("400x600")
+    top.geometry("+400+300")
     top.config(bg=defBG)
     top.title("Configura tu escenario")
     top.protocol('WM_DELETE_WINDOW', onClosing)
 
-    def setDropdown(gestureAssigned):
-         gestureSelected = StringVar()
-         gestureSelected.set(gestureAssigned)
+    def createGest():
+        print (len(_temp_list))
+        if len(_temp_list) < 9:
 
-         optGesturesMenu = OptionMenu(top, gestureSelected, *recognize.actions)
-         optGesturesMenu.pack()
+            unusedGest = 10             # Buscamos un gesto qeu no haya sido asignado
+            for i in range(9):
+                used = False
+                for gest in _temp_list:
+                    if gest[0] == i:
+                        used = True
+                if not used:
+                    unusedGest = i
+                    break
 
-    for gest in currentScene._GEST_DICT_:
-        setDropdown(gest[0])
+            _temp_list.append([unusedGest, '',''])      #lo agregamos con acciones vacias
+            currentScene.updateSceneGestures(1, _temp_list[len(_temp_list)-1])  # Lo mandamos al objeto
+            print (rowNum)
+            setDropdown(unusedGest, rowNum)
 
     # Boton para el inicio del reconocimiento
     b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
-    b.place(relx=0.37, rely=0.2)
+    b.grid(row=0, column=0, pady=10, padx=5)
+    b2 = Button(top, text="Nuevo gesto", command=createGest)
+    b2.grid(row=0, column=1, pady=10, padx=5)
+
+    def updateGest(gestNum, opt, link):
+        for gest in _temp_list:
+            if gest[0] == gestNum:
+                gest[1] = opt
+                gest[2] = link
+
+        currentScene.updateSceneGestures(2, [gestNum, opt, link])   # Mandamos la actualizacion al objeto
+
+    def deleteGest(gestNum):
+        i = 0
+        for gest in _temp_list:
+            if gest[0] == gestNum:
+                _temp_list.pop(i)
+            else:
+                i+=1
+
+        currentScene.updateSceneGestures(3, [gestNum,'',''])
+
+    def setDropdown(gestureAssigned, rowNum):
+        gestureSelected = StringVar()
+        gestureSelected.set(gestureAssigned)
+
+        optGesturesMenu = OptionMenu(top, gestureSelected, *recognize.actions)
+        optGesturesMenu.grid(row=rowNum, column=0, padx=10)
+
+    for gest in currentScene._GEST_DICT_:   # Rellena la nueva lista temporal con los gestos para poder tenerlos en
+        _temp_list.append(gest)             # tiempo real
+        setDropdown(gest[0], rowNum)
+        rowNum += 1
+
 
 def windowCreateScene():    # Ventana de creacion de escenario
     top = Toplevel(root)

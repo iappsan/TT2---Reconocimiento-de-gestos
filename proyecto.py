@@ -17,15 +17,15 @@ lastGesture = ''
 keepOpen = True
 actions = ['Gesto 0','Gesto 1','Gesto 2','Gesto 3','Gesto 4','Gesto 5','Gesto 6','Gesto 7','Gesto 8']
 actionsDict = [
-    ['Gesto 0', 'Accion', 'Link'],
-    ['Gesto 1', 'Accion', 'Link'],
-    ['Gesto 2', 'Accion', 'Link'],
-    ['Gesto 3', 'Accion', 'Link'],
-    ['Gesto 4', 'Accion', 'Link'],
-    ['Gesto 5', 'Accion', 'Link'],
-    ['Gesto 6', 'Accion', 'Link'],
-    ['Gesto 7', 'Accion', 'Link'],
-    ['Gesto 8', 'Accion', 'Link']
+    [0, 'Accion', 'Link'],
+    [1, 'Accion', 'Link'],
+    [2, 'Accion', 'Link'],
+    [3, 'Accion', 'Link'],
+    [4, 'Accion', 'Link'],
+    [5, 'Accion', 'Link'],
+    [6, 'Accion', 'Link'],
+    [7, 'Accion', 'Link'],
+    [8, 'Accion', 'Link']
 ]
 
 #   Convertimos los booleanos en una cadena simple para ejemplificar los gestos
