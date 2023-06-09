@@ -1,4 +1,6 @@
 from datetime import date
+from pynput.keyboard import Key, Controller
+import os
 
 class Scene:
     
@@ -7,6 +9,23 @@ class Scene:
     _SCENE_NAME_ = ''           # Nombre de escenario
     _SCENE_DATE_ = ''           # Fecha de creacion
     _GEST_DICT_ = []            # Diccionario de gestos con enlaces
+                                # El diccionario tiene la siguiente estructura:
+                                # [Numerodegesto, 'Accion que hace', 'link si es necesario']
+
+    gestures = ['Gesto 0','Gesto 1','Gesto 2','Gesto 3','Gesto 4','Gesto 5','Gesto 6','Gesto 7','Gesto 8']
+
+    actions = [
+        "Abrir archivo",
+        "Abrir enlace",
+        "Siguiente",
+        "Anterior",
+        "Play / Pausa",
+        "Maximizar ventana",
+        "Minimizar ventana",
+        "Cerrar ventana",
+        "Aplicacion siguiente",
+        "Aplicacion anterior",
+    ]
 
     FILEPATH = ''               # Ruta de escenario
 
@@ -93,6 +112,36 @@ class Scene:
 
     def setSceneName(self, newName):
         self._SCENE_NAME_ = newName
+
+    def invokeAction(fingers):      # Invocamos las acciones que cada gesto debe de hacer
+        keyboard = Controller()
+
+        if fingers == '00000':
+            print ('Gesto 0')
+        elif fingers == '01000':
+            print ('Gesto 1')
+            keyboard.tap(Key.f5)
+        elif fingers == '01100':
+            print ('Gesto 2')
+            keyboard.tap(Key.right)
+        elif fingers == '00111':
+            print ('Gesto 3')
+            os.system('explorer "https://netflix.com"')
+        elif fingers == '01111':
+            print ('Gesto 4')
+        elif fingers == '10000':
+            print ('Gesto 5')
+            keyboard.tap(Key.left)
+        elif fingers == '11000':
+            print ('Gesto 6')
+        elif fingers == '10001':
+            print ('Gesto 7')
+        elif fingers == '01110':
+            print ('Gesto 8')
+
+        elif fingers == '11111':        # Con este gesto se detiene el reconocimiento
+            print ('Gesto 9')
+            return False
 
     def emptypls(self):
         print ('Vaciando')

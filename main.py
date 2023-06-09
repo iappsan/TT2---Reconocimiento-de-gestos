@@ -3,6 +3,7 @@ from tkinter import filedialog
 from datetime import date
 import os
 import proyecto as recognize
+from tkinter import ttk
 
 # Importamos la clase del escenario
 from escenario import Scene
@@ -12,6 +13,7 @@ defBG = "#303030"
 defFontColor = "#E7E7E7"
 currentScene = Scene()
 tempDirectory = 'tempScenes/'
+ipadding = {'ipadx': 10, 'ipady': 10}
 
 
 # Crear funciones
@@ -33,7 +35,6 @@ def windowHelp():           # Ventana de ayuda
 def windowConfigScene():    # Ventana de configuracion de escenario
     global currentScene
     _temp_list = []
-    rowNum = 1
 
     print ('Escenario en uso:\n'+currentScene._SCENE_NAME_)
 
@@ -45,7 +46,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     def initRecognize():    # Resetea parametros para empezar o continuar el reconocimiento
         recognize.keepOpen = True
-        recognize.init()
+        recognize.init(currentScene)
 
     root.withdraw()
     top = Toplevel()
@@ -55,6 +56,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     top.title("Configura tu escenario")
     top.protocol('WM_DELETE_WINDOW', onClosing)
 
+    # Cambiamos la forma de crear links con gestos, entonces la sig funcion createGest() esta en desuso por ahora
     def createGest():
         print (len(_temp_list))
         if len(_temp_list) < 9:
@@ -71,14 +73,16 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
             _temp_list.append([unusedGest, '',''])      #lo agregamos con acciones vacias
             currentScene.updateSceneGestures(1, _temp_list[len(_temp_list)-1])  # Lo mandamos al objeto
-            print (rowNum)
-            setDropdown(unusedGest, rowNum)
+            setDropdown(unusedGest)
+
+    def saveScene():
+        pass
 
     # Boton para el inicio del reconocimiento
     b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
-    b.grid(row=0, column=0, pady=10, padx=5)
-    b2 = Button(top, text="Nuevo gesto", command=createGest)
-    b2.grid(row=0, column=1, pady=10, padx=5)
+    b.pack(pady=10)
+    b2 = Button(top, text="Guardar cambios", command=saveScene)
+    b2.pack()
 
     def updateGest(gestNum, opt, link):
         for gest in _temp_list:
@@ -98,17 +102,21 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
         currentScene.updateSceneGestures(3, [gestNum,'',''])
 
-    def setDropdown(gestureAssigned, rowNum):
-        gestureSelected = StringVar()
-        gestureSelected.set(gestureAssigned)
+    def setDropdown(gestList):
 
-        optGesturesMenu = OptionMenu(top, gestureSelected, *recognize.actions)
-        optGesturesMenu.grid(row=rowNum, column=0, padx=10)
+        gLabel = Label(top, text=gestList[0], width=30)
+        gLabel.pack(**ipadding, expand=True, fill=BOTH, side=LEFT)
+        actionLinked = StringVar()
+        actionLinked.set(gestList[1])
+        optActMenu = OptionMenu(top, actionLinked, *currentScene.actions)
+        optActMenu.pack(pady=10)
 
-    for gest in currentScene._GEST_DICT_:   # Rellena la nueva lista temporal con los gestos para poder tenerlos en
-        _temp_list.append(gest)             # tiempo real
-        setDropdown(gest[0], rowNum)
-        rowNum += 1
+    for gest in currentScene.gestures:   # Rellena la nueva lista temporal con los gestos para poder tenerlos en
+        _temp_list.append(gest)          # tiempo real
+        setDropdown(gest)
+
+    for item in _temp_list:
+        print (item)
 
 
 def windowCreateScene():    # Ventana de creacion de escenario

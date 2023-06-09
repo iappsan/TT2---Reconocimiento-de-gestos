@@ -1,10 +1,11 @@
 import cv2
-import os
 import numpy as np
 import mediapipe as mp
 import threading
 import time
+import os
 from pynput.keyboard import Key, Controller
+from escenario import Scene
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -15,7 +16,7 @@ timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
 keepOpen = True
-actions = ['Gesto 0','Gesto 1','Gesto 2','Gesto 3','Gesto 4','Gesto 5','Gesto 6','Gesto 7','Gesto 8']
+currentScene = Scene()
 actionsDict = [
     [0, 'Accion', 'Link'],
     [1, 'Accion', 'Link'],
@@ -42,46 +43,18 @@ def arrayConv(array) -> str:
 def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por medio de un contador
     global lastGesture
     global gestureSec
+    global keepOpen
+    global currentScene
+
     if lastGesture != actualGesture:
         lastGesture = actualGesture
         gestureSec = timeInSecs
     else:
         if timeInSecs == (gestureSec + 3):
-            invokeAction(actualGesture)
+            if not currentScene.invokeAction(actualGesture):
+                keepOpen = False
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
-
-def invokeAction(fingers):      # Invocamos las acciones que cada gesto debe de hacer
-    keyboard = Controller()
-    global actions
-
-    if fingers == '00000':
-        print ('Gesto 0')
-    elif fingers == '01000':
-        print ('Gesto 1')
-        keyboard.tap(Key.f5)
-    elif fingers == '01100':
-        print ('Gesto 2')
-        keyboard.tap(Key.right)
-    elif fingers == '00111':
-        print ('Gesto 3')
-        os.system('explorer "https://netflix.com"')
-    elif fingers == '01111':
-        print ('Gesto 4')
-    elif fingers == '10000':
-        print ('Gesto 5')
-        keyboard.tap(Key.left)
-    elif fingers == '11000':
-        print ('Gesto 6')
-    elif fingers == '10001':
-        print ('Gesto 7')
-    elif fingers == '01110':
-        print ('Gesto 8')
-
-    elif fingers == '11111':        # Con este gesto se detiene el reconocimiento
-        print ('Gesto 9')
-        global keepOpen
-        keepOpen = False
-        
+     
 
 # Esta funcion hace una comparacion por diferencia para saber si un dedo esta abierto o no
 def openOrNot(WRIST, FT, FB):
@@ -114,20 +87,23 @@ def clock():        # Esta funcion nace como un hilo para llevar un conteo de se
             print ('Fin de reconocimiento')
             break
 
-def init():
+def init(cScene):
 
     global x
     global y
     global lastGesture
     global keepOpen
+    global currentScene
+
+    currentScene = cScene
 
     timer = threading.Thread(target=clock)
     timer.start()
 
-    # For webcam input:
+    # Obtenemos la entrada de la camara
     cap = cv2.VideoCapture(0)
 
-    # Here we get the x,y size
+    # Aqui obtenemos el tamano de X y Y
     x = int (cap.get(3))
     y = int (cap.get(4))
     print('x: {}, y {}'.format(x,y))
@@ -155,14 +131,14 @@ def init():
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
         
-                    # Here we're creating a new point that indicates the center of the palm
+                    # Creamos un punto que indique el centro de la palma
                     wristP = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
                     midFB = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_MCP]
                     newCx = int((x*wristP.x + x*midFB.x)/2)
                     newCy = int((y*wristP.y + y*midFB.y)/2)
                     cv2.circle(image, (newCx,newCy), 3, (100,33,200),2)  
                     middlePoint = [newCx,newCy]
-                    # New point for the thumb
+                    # Creamos un nuevo punto para utilizarlo con el pulgar
                     indFB = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_MCP]
                     thumbFB = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_CMC]
                     newCx4T = int((x*thumbFB.x + x*1.1*indFB.x)/2)
@@ -206,7 +182,7 @@ def init():
             # Si no se detecta ninguna mano, seteamos el ultimo gesto reconocido a vacio
             else: 
                 lastGesture = ''
-            # Voltea la image horizontalmente
+            # Voltea l a image horizontalmente
             cv2.imshow('RGM', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == ord('q'):       # Si presionamos la tecla Q, salimos
                 keepOpen = False
@@ -215,4 +191,4 @@ def init():
         cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    init()
+    init(currentScene)
