@@ -15,16 +15,21 @@ class Scene:
     gestures = ['Gesto 0','Gesto 1','Gesto 2','Gesto 3','Gesto 4','Gesto 5','Gesto 6','Gesto 7','Gesto 8']
 
     actions = [
-        "Abrir archivo",
-        "Abrir enlace",
-        "Siguiente",
-        "Anterior",
-        "Play / Pausa",
-        "Maximizar ventana",
-        "Minimizar ventana",
-        "Cerrar ventana",
-        "Aplicacion siguiente",
-        "Aplicacion anterior",
+        "Abrir archivo",        # 1
+        "Abrir enlace",         # 1
+        "Siguiente",            # 2
+        "Anterior",             # 2
+        "Play / Pausa",         # 2
+        "Maximizar ventana",    # 2
+        "Minimizar ventana",    # 2
+        "Cerrar ventana",       # 2
+        "Aplicacion siguiente", # 2
+        "Aplicacion anterior",  # 2
+    ]
+
+    command = [
+        '',
+        'start ',
     ]
 
     FILEPATH = ''               # Ruta de escenario
@@ -113,35 +118,61 @@ class Scene:
     def setSceneName(self, newName):
         self._SCENE_NAME_ = newName
 
-    def invokeAction(fingers):      # Invocamos las acciones que cada gesto debe de hacer
-        keyboard = Controller()
+    def invokeAction(self, fingers):      # Identificamos que posicion de gesto es el que identificamos
 
         if fingers == '00000':
-            print ('Gesto 0')
+            return 1
         elif fingers == '01000':
-            print ('Gesto 1')
-            keyboard.tap(Key.f5)
+            return 2
         elif fingers == '01100':
-            print ('Gesto 2')
-            keyboard.tap(Key.right)
+            return 3
         elif fingers == '00111':
-            print ('Gesto 3')
-            os.system('explorer "https://netflix.com"')
+            return 4
         elif fingers == '01111':
-            print ('Gesto 4')
+            return 5
         elif fingers == '10000':
-            print ('Gesto 5')
-            keyboard.tap(Key.left)
+            return 6
         elif fingers == '11000':
-            print ('Gesto 6')
+            return 7
         elif fingers == '10001':
-            print ('Gesto 7')
+            return 8
         elif fingers == '01110':
-            print ('Gesto 8')
-
+            return 9
         elif fingers == '11111':        # Con este gesto se detiene el reconocimiento
-            print ('Gesto 9')
-            return False
+            print ('GESTO DE SALIDA')
+            return 0
+    
+    def execAct(self, fingerStr):         # Ejecuta las acciones segun su tipo
+
+        keyboard = Controller()
+
+        n = self.invokeAction(fingerStr) - 1
+        if n == 0 or n == 1:
+            os.system(self.command[n] + self._GEST_DICT_[2])
+        elif n == 2:
+            keyboard.tap(Key.right)
+        elif n == 3:
+            keyboard.tap(Key.left)
+        elif n == 4:
+            keyboard.tap(Key.space)
+        elif n == 5:
+            keyboard.press(Key.cmd)
+            keyboard.tap(Key.up)
+            keyboard.release(Key.cmd)
+        elif n == 6:
+            keyboard.press(Key.cmd)
+            keyboard.tap(Key.down)
+            keyboard.release(Key.cmd)
+        elif n == 7:
+            keyboard.press(Key.alt)
+            keyboard.tap(Key.tab)
+            keyboard.release(Key.alt)
+        elif n == 8:
+            keyboard.press(Key.alt)
+            keyboard.press(Key.shift)
+            keyboard.tap(Key.tab)
+            keyboard.release(Key.shift)
+            keyboard.release(Key.cmd)
 
     def emptypls(self):
         print ('Vaciando')

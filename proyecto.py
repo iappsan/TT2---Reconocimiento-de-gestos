@@ -40,7 +40,7 @@ def arrayConv(array) -> str:
     # print (resultStr)
     return resultStr
 
-def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por medio de un contador
+def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por medio de un contador y cuando pase, ejecutamos la accion
     global lastGesture
     global gestureSec
     global keepOpen
@@ -53,6 +53,8 @@ def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por med
         if timeInSecs == (gestureSec + 3):
             if not currentScene.invokeAction(actualGesture):
                 keepOpen = False
+            else:
+                currentScene.execAct(actualGesture)
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
      
 
