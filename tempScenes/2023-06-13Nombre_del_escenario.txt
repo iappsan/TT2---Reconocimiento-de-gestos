@@ -5,7 +5,7 @@ Fecha___
 2,Maximizar ventana,
 3,Minimizar ventana,
 4,Aplicacion siguiente,
-5,Abrir enlace,fwefwewe
-6,Play / Pausa,
+5,Minimizar ventana,
+6,Minimizar ventana,
 7,Maximizar ventana,
 8,Aplicacion siguiente,

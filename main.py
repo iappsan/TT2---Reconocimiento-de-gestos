@@ -118,6 +118,11 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     b3 = Button(top, text="Actualizar", command=refreshScene)
     b3.grid(row=0, column=5, pady=10)
 
+    def splitPaths(pathToSplit: str):
+        newStrList = pathToSplit.split('/')
+        print( newStrList)
+        return newStrList[-1]
+
     def getPath():
         try:
             path = filedialog.askopenfilename(
@@ -157,13 +162,17 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         elif opt == currentScene.actions[1]:
             getLink(gestNum, opt)
 
-        print(gestNum)
-        if gestNum > 5:
-            linkLabel = Label(top, text=link, width=30)
-            linkLabel.grid(row=gestNum-4, column=5)
-        else:
-            linkLabel = Label(top, text=link)
-            linkLabel.grid(row=gestNum+1, column=2)
+    def updateLabels():
+        global currentScene
+        for x in range(9):
+            if currentScene._GEST_DICT_[x][1] == currentScene.actions[0] or currentScene._GEST_DICT_[x][1] == currentScene.actions[1]:
+                link = splitPaths(currentScene._GEST_DICT_[x][2])
+                linkLabel = Label(top, text=link)
+                linkLabel.config(width=5)
+                if x > 5:
+                    linkLabel.grid(row=x-4, column=5)
+                else:
+                    linkLabel.grid(row=x+1, column=2)
 
     def deleteGest(gestNum):
         i = 0
@@ -320,6 +329,8 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         action_list9.current(tempStr)
     action_list9.bind('<<ComboboxSelected>>', lambda event: updateGest(8, action_list9.get(), ''))
     action_list9.grid(row=rowGe-5, column=4)
+
+    updateLabels()
 
     # FIN DE MENU DE GESTOS
 
