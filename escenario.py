@@ -33,12 +33,9 @@ class Scene:
         "Aplicacion anterior",  # 2
     ]
 
-    command = [
-        '',
-        'start ',
-    ]
-
     FILEPATH = ''               # Ruta de escenario
+
+    overlayStuff = ['Gesto','Accion']           # [Gesto reconocido, Accion]
 
     def __init__(self):
         print ('Escenario seteado')
@@ -154,33 +151,44 @@ class Scene:
         elif fingers == '11111':        # Con este gesto se detiene el reconocimiento
             print ('GESTO DE SALIDA')
             return 0
+        else:
+            return 100
     
     def execAct(self, fingerStr):         # Ejecuta las acciones segun su tipo
 
         keyboard = Controller()
-
         n = fingerStr - 1
-        if n == 0 or n == 1:
-            os.system(self.command[n] + self._GEST_DICT_[2])
-        elif n == 2:
+        print('Esto se debe ejecutar:')
+        actToExec = self._GEST_DICT_[n][1]
+        print(actToExec)
+        
+        if actToExec == self.actions[0]:
+            os.system(str(self._GEST_DICT_[n][2]))
+        elif actToExec == self.actions[1]:
+            os.system('start ' + str(self._GEST_DICT_[n][2]))
+        elif actToExec == self.actions[2]:
             keyboard.tap(Key.right)
-        elif n == 3:
+        elif actToExec == self.actions[3]:
             keyboard.tap(Key.left)
-        elif n == 4:
+        elif actToExec == self.actions[4]:
             keyboard.tap(Key.space)
-        elif n == 5:
+        elif actToExec == self.actions[5]:
             keyboard.press(Key.cmd)
             keyboard.tap(Key.up)
             keyboard.release(Key.cmd)
-        elif n == 6:
+        elif actToExec == self.actions[6]:
             keyboard.press(Key.cmd)
             keyboard.tap(Key.down)
             keyboard.release(Key.cmd)
-        elif n == 7:
+        elif actToExec == self.actions[7]:
+            keyboard.press(Key.alt)
+            keyboard.tap(Key.f4)
+            keyboard.release(Key.alt)
+        elif actToExec == self.actions[8]:
             keyboard.press(Key.alt)
             keyboard.tap(Key.tab)
             keyboard.release(Key.alt)
-        elif n == 8:
+        elif actToExec == self.actions[9]:
             keyboard.press(Key.alt)
             keyboard.press(Key.shift)
             keyboard.tap(Key.tab)

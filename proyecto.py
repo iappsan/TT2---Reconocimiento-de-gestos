@@ -39,11 +39,16 @@ def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por med
         gestureSec = timeInSecs
     else:
         if timeInSecs == (gestureSec + 3):
+            currentScene.overlayStuff[0] = 'Reconociendo gesto: '+str(actualGesture)
             gestNUM = currentScene.invokeAction(actualGesture)
             if not gestNUM:
                 keepOpen = False
-            else:
+                lastGesture = ''
+            elif gestNUM < 10:
+                print('Ejecutando gesto '+ str(gestNUM-1))
                 currentScene.execAct(gestNUM)
+            else:
+                currentScene.overlayStuff[0] = 'Este gesto no se acepta'
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
      
 
@@ -105,6 +110,13 @@ def init(cScene: Scene):
         min_tracking_confidence=0.5) as hands:
         while cap.isOpened() and keepOpen:
             success, image = cap.read()
+            cv2.putText(image, 
+                str(currentScene.overlayStuff[0]), 
+                (50, 50), 
+                cv2.FONT_HERSHEY_SIMPLEX,1, 
+                (0, 255, 255), 
+                2, 
+                cv2.LINE_4)
             if not success:
                 print("Ignoring empty camera frame.")
                 continue
@@ -173,8 +185,8 @@ def init(cScene: Scene):
             # Si no se detecta ninguna mano, seteamos el ultimo gesto reconocido a vacio
             else: 
                 lastGesture = ''
-            # Voltea l a image horizontalmente
-            cv2.imshow('RGM', cv2.flip(image, 1))
+            # Voltea la imagen horizontalmente
+            cv2.imshow('RGM', image)
             if cv2.waitKey(5) & 0xFF == ord('q'):       # Si presionamos la tecla Q, salimos
                 keepOpen = False
                 break

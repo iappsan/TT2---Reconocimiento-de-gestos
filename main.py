@@ -1,10 +1,11 @@
 from tkinter import *
 from tkinter import filedialog
 from datetime import date
-import os
+import threading
 from PIL import ImageTk, Image
 import proyecto as recognize
 from tkinter import ttk
+from overlay import Window
 import time
 
 # Importamos la clase del escenario
@@ -47,6 +48,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     def initRecognize():    # Resetea parametros para empezar o continuar el reconocimiento
         global currentScene
         recognize.keepOpen = True
+        # win = Window()
+        # label = tk.Label(win.root, text="Overlay locochon")
+        # label.pack()
+        # win.launch()
         recognize.init(currentScene)
 
     root.withdraw()
@@ -169,7 +174,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
             if currentScene._GEST_DICT_[x][1] == currentScene.actions[0] or currentScene._GEST_DICT_[x][1] == currentScene.actions[1]:
                 link = splitPaths(currentScene._GEST_DICT_[x][2])
                 linkLabel = Label(top, text=link)
-                linkLabel.config(width=5)
+                linkLabel.config(width=15)
                 if x > 5:
                     linkLabel.grid(row=x-4, column=5)
                 else:
@@ -334,9 +339,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     updateLabels()
 
     # FIN DE MENU DE GESTOS
-
-    for gest in currentScene.gestures:   # Rellena la nueva lista temporal con los gestos para poder tenerlos en
-        _temp_list.append(gest)          # tiempo real
+            
 
 def windowCreateScene():    # Ventana de creacion de escenario
     top = Toplevel(root)
