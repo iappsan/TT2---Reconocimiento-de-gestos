@@ -5,9 +5,11 @@ import os
 from PIL import ImageTk, Image
 import proyecto as recognize
 from tkinter import ttk
+import time
 
 # Importamos la clase del escenario
 from escenario import Scene
+from escenario import tempVars
 
 # Globales
 defBG = "#303030"
@@ -15,6 +17,7 @@ defFontColor = "#E7E7E7"
 currentScene = Scene()
 tempDirectory = 'tempScenes/'
 ipadding = {'ipadx': 10, 'ipady': 10}
+temp_entry = ['']
 
 
 # Crear funciones
@@ -37,8 +40,6 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     global currentScene
     _temp_list = []
 
-    print ('Escenario en uso:\n'+currentScene._SCENE_NAME_)
-
     def onClosing():    # Cuando el usuario cierra la ventana, resurge la ventana principal
         root.iconify()
         root.deiconify()
@@ -51,7 +52,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     root.withdraw()
     top = Toplevel()
-    top.geometry("500x600")
+    top.geometry("900x600")
     top.geometry("+400+300")
     top.config(bg=defBG)
     top.title("Configura tu escenario")
@@ -85,24 +86,9 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     # Boton para guardar cambios
     b2 = Button(top, text="Guardar cambios", command=saveScene)
     b2.grid(row=0, column=3, pady=10)
-
-    def updateGest(gestNum, opt, link):
-        for gest in _temp_list:
-            if gest[0] == gestNum:
-                gest[1] = opt
-                gest[2] = link
-
-        currentScene.updateSceneGestures(2, [gestNum, opt, link])   # Mandamos la actualizacion al objeto
-
-    def deleteGest(gestNum):
-        i = 0
-        for gest in _temp_list:
-            if gest[0] == gestNum:
-                _temp_list.pop(i)
-            else:
-                i+=1
-
-        currentScene.updateSceneGestures(3, [gestNum,'',''])
+    # Boton para actualizar etiquetas
+    b3 = Button(top, text="Actualizar", command=saveScene)
+    b3.grid(row=0, column=5, pady=10)
 
     def getPath():
         try:
@@ -115,28 +101,162 @@ def windowConfigScene():    # Ventana de configuracion de escenario
                     ("Word","*.docx"),
                     ("Excel","*.xlsx")
                 ))
-            
-            print (path)
+            return path
         except Exception as e:
             print("No abriste nada")
             print(e)
 
-    def createLink():
-        pass
+    def getLink(gestNum, opt):
+        top2 = Toplevel()
+        top2.geometry("400x200")
+        top2.title("Ingresa el link")
+
+        def close_window():
+            global currentScene
+            currentScene.updateSceneGestures(2, [gestNum, opt, E.get()])
+            top2.destroy()
+
+        E = Entry(top2)
+        E.pack(anchor = CENTER)
+        B = Button(top2, text = "Enviar", command = close_window)
+        B.pack(anchor = S)
+
+    def updateGest(gestNum, opt, link):
+        global currentScene
+        if opt == currentScene.actions[0]:
+            link = getPath()
+            currentScene.updateSceneGestures(2, [gestNum, opt, link])   # Mandamos la actualizacion al objeto
+        elif opt == currentScene.actions[1]:
+            getLink(gestNum, opt)
+
+        print(gestNum)
+        if gestNum > 5:
+            linkLabel = Label(top, text=link)
+            linkLabel.grid(row=gestNum-5, column=5)
+        else:
+            linkLabel = Label(top, text=link)
+            linkLabel.grid(row=gestNum, column=2)
+
+    def deleteGest(gestNum):
+        i = 0
+        for gest in _temp_list:
+            if gest[0] == gestNum:
+                _temp_list.pop(i)
+            else:
+                i+=1
+
+        currentScene.updateSceneGestures(3, [gestNum,'',''])
 
 
     # COMIENZO DE MENU DE GESTOS
-
+    
+    # 0
+    rowGe = 1 
     img = PhotoImage(file= "img/gestures/0.png")
     gLabel = Label(top, image=img)
-    gLabel.grid(row=1, column=0, padx=5, pady=5)
+    gLabel.image = img
+    gLabel.grid(row=rowGe, column=0, padx=25, pady=5)
 
-    action_list = ttk.Combobox(root, width=18, state='readonly')
+    action_list = ttk.Combobox(top, width=18, state='readonly')
     action_list['values'] = currentScene.actions
-    action_list.pack()
+    action_list.bind('<<ComboboxSelected>>', lambda event: updateGest(1, action_list.get(), ''))
+    action_list.grid(row=rowGe, column=1)
 
-    b3 = Button(top, text=' - ', command=getPath)
-    b3.grid(row=rowN, column=2)
+    # 1
+    rowGe = 2 
+    img2 = PhotoImage(file= "img/gestures/1.png")
+    gLabel2 = Label(top, image=img2)
+    gLabel2.image = img2
+    gLabel2.grid(row=rowGe, column=0, padx=25, pady=5)
+
+    action_list2 = ttk.Combobox(top, width=18, state='readonly')
+    action_list2['values'] = currentScene.actions
+    action_list2.bind('<<ComboboxSelected>>', lambda event: updateGest(2, action_list2.get(), ''))
+    action_list2.grid(row=rowGe, column=1)
+
+    # 2
+    rowGe = 3 
+    img3 = PhotoImage(file= "img/gestures/2.png")
+    gLabel3 = Label(top, image=img3)
+    gLabel3.image = img3
+    gLabel3.grid(row=rowGe, column=0, padx=25, pady=5)
+
+    action_list3 = ttk.Combobox(top, width=18, state='readonly')
+    action_list3['values'] = currentScene.actions
+    action_list3.bind('<<ComboboxSelected>>', lambda event: updateGest(3, action_list3.get(), ''))
+    action_list3.grid(row=rowGe, column=1)
+    
+    # 3
+    rowGe = 4 
+    img4 = PhotoImage(file= "img/gestures/3.png")
+    gLabel4 = Label(top, image=img4)
+    gLabel4.image = img4
+    gLabel4.grid(row=rowGe, column=0, padx=25, pady=5)
+
+    action_list4 = ttk.Combobox(top, width=18, state='readonly')
+    action_list4['values'] = currentScene.actions
+    action_list4.bind('<<ComboboxSelected>>', lambda event: updateGest(4, action_list4.get(), ''))
+    action_list4.grid(row=rowGe, column=1)
+
+    # 4
+    rowGe = 5 
+    img5 = PhotoImage(file= "img/gestures/4.png")
+    gLabel5 = Label(top, image=img5)
+    gLabel5.image = img5
+    gLabel5.grid(row=rowGe, column=0, padx=25, pady=5)
+
+    action_list5 = ttk.Combobox(top, width=18, state='readonly')
+    action_list5['values'] = currentScene.actions
+    action_list5.bind('<<ComboboxSelected>>', lambda event: updateGest(5, action_list5.get(), ''))
+    action_list5.grid(row=rowGe, column=1)
+    
+    # 5
+    rowGe = 6 
+    img6 = PhotoImage(file= "img/gestures/5.png")
+    gLabel6 = Label(top, image=img6)
+    gLabel6.image = img6
+    gLabel6.grid(row=rowGe-5, column=3, padx=25, pady=5)
+
+    action_list6 = ttk.Combobox(top, width=18, state='readonly')
+    action_list6['values'] = currentScene.actions
+    action_list6.bind('<<ComboboxSelected>>', lambda event: updateGest(6, action_list6.get(), ''))
+    action_list6.grid(row=rowGe-5, column=4)
+
+    # 6
+    rowGe = 7 
+    img7 = PhotoImage(file= "img/gestures/6.png")
+    gLabel7 = Label(top, image=img7)
+    gLabel7.image = img7
+    gLabel7.grid(row=rowGe-5, column=3, padx=25, pady=5)
+
+    action_list7 = ttk.Combobox(top, width=18, state='readonly')
+    action_list7['values'] = currentScene.actions
+    action_list7.bind('<<ComboboxSelected>>', lambda event: updateGest(7, action_list7.get(), ''))
+    action_list7.grid(row=rowGe-5, column=4)
+
+    # 7
+    rowGe = 8 
+    img8 = PhotoImage(file= "img/gestures/7.png")
+    gLabel8 = Label(top, image=img8)
+    gLabel8.image = img8
+    gLabel8.grid(row=rowGe-5, column=3, padx=25, pady=5)
+
+    action_list8 = ttk.Combobox(top, width=18, state='readonly')
+    action_list8['values'] = currentScene.actions
+    action_list8.bind('<<ComboboxSelected>>', lambda event: updateGest(8, action_list8.get(), ''))
+    action_list8.grid(row=rowGe-5, column=4)
+
+    # 8
+    rowGe = 9 
+    img9 = PhotoImage(file= "img/gestures/8.png")
+    gLabel9 = Label(top, image=img9)
+    gLabel9.image = img9
+    gLabel9.grid(row=rowGe-5, column=3, padx=25, pady=5)
+
+    action_list9 = ttk.Combobox(top, width=18, state='readonly')
+    action_list9['values'] = currentScene.actions
+    action_list9.bind('<<ComboboxSelected>>', lambda event: updateGest(9, action_list9.get(), ''))
+    action_list9.grid(row=rowGe-5, column=4)
 
     # FIN DE MENU DE GESTOS
 
@@ -257,47 +377,3 @@ b3 = Button(root, text="Crear", command=windowCreateScene).pack()
 b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
 
 root.mainloop()
-
-
-
-
-
-# from tkinter import *
-# from PIL import ImageTk, Image
-# import os
-# from escenario import Scene
-# from pynput.keyboard import Key, Controller
-# from PIL import ImageTk, Image
-# from tkinter import ttk
-
-# vall = 0
-
-# currentScene = Scene()
-# vall +=1
-# vall +=1
-
-# keyboard = Controller()
-
-# def updateGest(opt):
-#     print('Hola' + str(action_list.get()))
-#     action_list.set('Jiji')
-
-# root = Tk()
-# l1 = Label(root, text="HOlaaaa").pack()
-# img = ImageTk.PhotoImage(Image.open("img/gestures/0.png"))
-# panel = Label(root, image = img)
-# panel.pack(side = "bottom", fill = "both", expand = "yes")
-
-# action_list = ttk.Combobox(root, width=18, state='readonly')
-# action_list['values'] = currentScene.actions
-# action_list.bind('<<ComboboxSelected>>', updateGest)
-# action_list.pack()
-
-# root.mainloop()
-
-
-
-# if vall == 1 or vall ==5:
-#     print('Hola')
-# else:
-#     print('adios')

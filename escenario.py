@@ -2,6 +2,12 @@ from datetime import date
 from pynput.keyboard import Key, Controller
 import os
 
+
+class tempVars:
+    temp_entry = ''
+    def __init__(self):
+        print ('Objeto temporal')   
+
 class Scene:
     
     _FILE_ = ''
