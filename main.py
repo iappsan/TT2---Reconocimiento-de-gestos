@@ -9,7 +9,6 @@ import time
 
 # Importamos la clase del escenario
 from escenario import Scene
-from escenario import tempVars
 
 # Globales
 defBG = "#303030"
@@ -17,7 +16,6 @@ defFontColor = "#E7E7E7"
 currentScene = Scene()
 tempDirectory = 'tempScenes/'
 ipadding = {'ipadx': 10, 'ipady': 10}
-temp_entry = ['']
 
 
 # Crear funciones
@@ -47,6 +45,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         top.destroy()
 
     def initRecognize():    # Resetea parametros para empezar o continuar el reconocimiento
+        global currentScene
         recognize.keepOpen = True
         recognize.init(currentScene)
 
@@ -77,8 +76,37 @@ def windowConfigScene():    # Ventana de configuracion de escenario
             currentScene.updateSceneGestures(1, _temp_list[len(_temp_list)-1])  # Lo mandamos al objeto
             setDropdown(unusedGest)
 
-    def saveScene():        # FAAAAAAAAAALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        pass
+    def saveScene():        # Solo guarda el escenario desde la clase
+        global currentScene
+        currentScene.saveScene()
+
+    def refreshScene():
+        global currentScene
+
+        print('\n')
+        print('\n')
+        print('\n')
+        temp_list = []
+        temp_list.append(action_list.get())
+        temp_list.append(action_list2.get())
+        temp_list.append(action_list3.get())
+        temp_list.append(action_list4.get())
+        temp_list.append(action_list5.get())
+        temp_list.append(action_list6.get())
+        temp_list.append(action_list7.get())
+        temp_list.append(action_list8.get())
+        temp_list.append(action_list9.get())
+        # print(temp_list)
+
+        for x in range(9):
+            link = ''
+            if temp_list[x] == currentScene.actions[0] or temp_list[x] == currentScene.actions[1]:
+                # print (currentScene._GEST_DICT_[x])
+                link = currentScene._GEST_DICT_[x][2]
+            currentScene.updateSceneGestures(2,[x, temp_list[x], link])
+        
+        currentScene.saveScene()
+
 
     # Boton para el inicio del reconocimiento
     b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
@@ -87,7 +115,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     b2 = Button(top, text="Guardar cambios", command=saveScene)
     b2.grid(row=0, column=3, pady=10)
     # Boton para actualizar etiquetas
-    b3 = Button(top, text="Actualizar", command=saveScene)
+    b3 = Button(top, text="Actualizar", command=refreshScene)
     b3.grid(row=0, column=5, pady=10)
 
     def getPath():
@@ -131,11 +159,11 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
         print(gestNum)
         if gestNum > 5:
-            linkLabel = Label(top, text=link)
-            linkLabel.grid(row=gestNum-5, column=5)
+            linkLabel = Label(top, text=link, width=30)
+            linkLabel.grid(row=gestNum-4, column=5)
         else:
             linkLabel = Label(top, text=link)
-            linkLabel.grid(row=gestNum, column=2)
+            linkLabel.grid(row=gestNum+1, column=2)
 
     def deleteGest(gestNum):
         i = 0
@@ -147,9 +175,17 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
         currentScene.updateSceneGestures(3, [gestNum,'',''])
 
+    def getLoadedGest(gestNum):
+        global currentScene
+        if len(currentScene._GEST_DICT_[gestNum][1]) > 0:
+            for x in range(9):
+                if currentScene._GEST_DICT_[gestNum][1] == currentScene.actions[x]:
+                    return x
+        return 100
 
     # COMIENZO DE MENU DE GESTOS
     
+    tempStr = ''
     # 0
     rowGe = 1 
     img = PhotoImage(file= "img/gestures/0.png")
@@ -159,7 +195,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list = ttk.Combobox(top, width=18, state='readonly')
     action_list['values'] = currentScene.actions
-    action_list.bind('<<ComboboxSelected>>', lambda event: updateGest(1, action_list.get(), ''))
+    tempStr = getLoadedGest(0)
+    if tempStr < 99:
+        action_list.current(tempStr)
+    action_list.bind('<<ComboboxSelected>>', lambda event: updateGest(0, action_list.get(), ''))
     action_list.grid(row=rowGe, column=1)
 
     # 1
@@ -171,7 +210,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list2 = ttk.Combobox(top, width=18, state='readonly')
     action_list2['values'] = currentScene.actions
-    action_list2.bind('<<ComboboxSelected>>', lambda event: updateGest(2, action_list2.get(), ''))
+    tempStr = getLoadedGest(1)
+    if tempStr < 99:
+        action_list2.current(tempStr)
+    action_list2.bind('<<ComboboxSelected>>', lambda event: updateGest(1, action_list2.get(), ''))
     action_list2.grid(row=rowGe, column=1)
 
     # 2
@@ -183,7 +225,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list3 = ttk.Combobox(top, width=18, state='readonly')
     action_list3['values'] = currentScene.actions
-    action_list3.bind('<<ComboboxSelected>>', lambda event: updateGest(3, action_list3.get(), ''))
+    tempStr = getLoadedGest(2)
+    if tempStr < 99:
+        action_list3.current(tempStr)
+    action_list3.bind('<<ComboboxSelected>>', lambda event: updateGest(2, action_list3.get(), ''))
     action_list3.grid(row=rowGe, column=1)
     
     # 3
@@ -195,7 +240,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list4 = ttk.Combobox(top, width=18, state='readonly')
     action_list4['values'] = currentScene.actions
-    action_list4.bind('<<ComboboxSelected>>', lambda event: updateGest(4, action_list4.get(), ''))
+    tempStr = getLoadedGest(3)
+    if tempStr < 99:
+        action_list4.current(tempStr)
+    action_list4.bind('<<ComboboxSelected>>', lambda event: updateGest(3, action_list4.get(), ''))
     action_list4.grid(row=rowGe, column=1)
 
     # 4
@@ -207,7 +255,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list5 = ttk.Combobox(top, width=18, state='readonly')
     action_list5['values'] = currentScene.actions
-    action_list5.bind('<<ComboboxSelected>>', lambda event: updateGest(5, action_list5.get(), ''))
+    tempStr = getLoadedGest(4)
+    if tempStr < 99:
+        action_list5.current(tempStr)
+    action_list5.bind('<<ComboboxSelected>>', lambda event: updateGest(4, action_list5.get(), ''))
     action_list5.grid(row=rowGe, column=1)
     
     # 5
@@ -219,7 +270,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list6 = ttk.Combobox(top, width=18, state='readonly')
     action_list6['values'] = currentScene.actions
-    action_list6.bind('<<ComboboxSelected>>', lambda event: updateGest(6, action_list6.get(), ''))
+    tempStr = getLoadedGest(5)
+    if tempStr < 99:
+        action_list6.current(tempStr)
+    action_list6.bind('<<ComboboxSelected>>', lambda event: updateGest(5, action_list6.get(), ''))
     action_list6.grid(row=rowGe-5, column=4)
 
     # 6
@@ -231,7 +285,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list7 = ttk.Combobox(top, width=18, state='readonly')
     action_list7['values'] = currentScene.actions
-    action_list7.bind('<<ComboboxSelected>>', lambda event: updateGest(7, action_list7.get(), ''))
+    tempStr = getLoadedGest(6)
+    if tempStr < 99:
+        action_list7.current(tempStr)
+    action_list7.bind('<<ComboboxSelected>>', lambda event: updateGest(6, action_list7.get(), ''))
     action_list7.grid(row=rowGe-5, column=4)
 
     # 7
@@ -243,7 +300,10 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list8 = ttk.Combobox(top, width=18, state='readonly')
     action_list8['values'] = currentScene.actions
-    action_list8.bind('<<ComboboxSelected>>', lambda event: updateGest(8, action_list8.get(), ''))
+    tempStr = getLoadedGest(7)
+    if tempStr < 99:
+        action_list8.current(tempStr)
+    action_list8.bind('<<ComboboxSelected>>', lambda event: updateGest(7, action_list8.get(), ''))
     action_list8.grid(row=rowGe-5, column=4)
 
     # 8
@@ -255,14 +315,16 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     action_list9 = ttk.Combobox(top, width=18, state='readonly')
     action_list9['values'] = currentScene.actions
-    action_list9.bind('<<ComboboxSelected>>', lambda event: updateGest(9, action_list9.get(), ''))
+    tempStr = getLoadedGest(8)
+    if tempStr < 99:
+        action_list9.current(tempStr)
+    action_list9.bind('<<ComboboxSelected>>', lambda event: updateGest(8, action_list9.get(), ''))
     action_list9.grid(row=rowGe-5, column=4)
 
     # FIN DE MENU DE GESTOS
 
     for gest in currentScene.gestures:   # Rellena la nueva lista temporal con los gestos para poder tenerlos en
         _temp_list.append(gest)          # tiempo real
-
 
 def windowCreateScene():    # Ventana de creacion de escenario
     top = Toplevel(root)
@@ -289,7 +351,10 @@ def windowCreateScene():    # Ventana de creacion de escenario
 
         newFile = open(tempDirectory+str(date.today())+newName.replace(' ','')+'.txt','w')
         newFile.write(newName+'\n')
-        newFile.write(str(date.today()))
+        newFile.write(str(date.today())+'\n')
+        for x in range(8):
+            newFile.write(str(x)+', '+', \n')
+        newFile.write('8, , ')
         newFile.close()
 
         # Se crea el objeto Scene para poder trabajar con el en la siguiente ventana

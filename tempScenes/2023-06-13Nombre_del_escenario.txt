@@ -1,0 +1,11 @@
+Nombre_del_escenario
+Fecha___
+0,Abrir archivo,C:/Users/ianni/OneDrive/Documents/TT2---Reconocimiento-de-gestos/tempScenes/2023-06-13xcascaw.txt
+1,Minimizar ventana,
+2,Maximizar ventana,
+3,Minimizar ventana,
+4,Aplicacion siguiente,
+5,Abrir enlace,fwefwewe
+6,Play / Pausa,
+7,Maximizar ventana,
+8,Aplicacion siguiente,

@@ -15,7 +15,7 @@ timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
 keepOpen = True
-currentScene = Scene()
+currentScene = ''
 
 #   Convertimos los booleanos en una cadena simple para ejemplificar los gestos
 def arrayConv(array) -> str:        

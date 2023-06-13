@@ -41,7 +41,9 @@ class Scene:
     FILEPATH = ''               # Ruta de escenario
 
     def __init__(self):
-        print ('Escenario creado')    
+        print ('Escenario seteado')
+        for x in range(9):
+            self._GEST_DICT_.append([x, '', ''])    
 
     def loadScene(self, path):
         self.FILEPATH = path
@@ -77,13 +79,18 @@ class Scene:
 
         elif opType == 2:
             print ('Mod')
-            gestFound = False
 
-            for gest in self._GEST_DICT_:
-                if not gestFound:
-                    if gest[0] == _DATA_[0]:        # Si se encuentra el gesto que se busca actualizar
-                        gest = _DATA_               # se actualiza el gesto, la accion y su link
-                        gestFound = True
+            # print(self._GEST_DICT_)
+            self._GEST_DICT_[_DATA_[0]] =_DATA_     # Igualamos el nuevo gesto al que ya estaba definido
+
+            print(self._GEST_DICT_[_DATA_[0]])
+            # gestFound = False
+
+            # for gest in self._GEST_DICT_:
+            #     if not gestFound:
+            #         if gest[0] == _DATA_[0]:        # Si se encuentra el gesto que se busca actualizar
+            #             gest = _DATA_               # se actualiza el gesto, la accion y su link
+            #             gestFound = True
 
         elif opType == 3:
             print ('Del')
@@ -102,7 +109,7 @@ class Scene:
         newData = []
 
         for line in DATA:
-            newLine = line[0]+','+line[1]+','+line[2]
+            newLine = str(line[0])+','+str(line[1])+','+str(line[2]+'\n')
             newData.append(newLine)
         
         return newData
@@ -112,7 +119,7 @@ class Scene:
 
         newFile = open('tempScenes/'+str(date.today())+self._SCENE_NAME_.replace(' ','')+'.txt','w')
         newFile.write(self._SCENE_NAME_+'\n')
-        newFile.write(self._SCENE_DATE_)
+        newFile.write(self._SCENE_DATE_+'\n')
         newFile.writelines(self.separateLists(self._GEST_DICT_))
         newFile.close()
 

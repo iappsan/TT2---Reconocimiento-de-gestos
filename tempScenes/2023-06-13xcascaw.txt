@@ -1,0 +1,11 @@
+xcascaw
+2023-06-13
+0,Siguiente,
+1,Maximizar ventana,
+2,Maximizar ventana,
+3,Play / Pausa,
+4,Siguiente,
+5,Maximizar ventana,
+6,,
+7,Abrir enlace,fewfw
+8,,
