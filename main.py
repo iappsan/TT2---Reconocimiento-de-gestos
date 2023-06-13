@@ -105,6 +105,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
                 link = currentScene._GEST_DICT_[x][2]
             currentScene.updateSceneGestures(2,[x, temp_list[x], link])
         
+        updateLabels()
         currentScene.saveScene()
 
 

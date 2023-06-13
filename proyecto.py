@@ -15,7 +15,7 @@ timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
 keepOpen = True
-currentScene = ''
+currentScene = Scene()
 
 #   Convertimos los booleanos en una cadena simple para ejemplificar los gestos
 def arrayConv(array) -> str:        
@@ -39,10 +39,11 @@ def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por med
         gestureSec = timeInSecs
     else:
         if timeInSecs == (gestureSec + 3):
-            if not currentScene.invokeAction(actualGesture):
+            gestNUM = currentScene.invokeAction(actualGesture)
+            if not gestNUM:
                 keepOpen = False
             else:
-                currentScene.execAct(actualGesture)
+                currentScene.execAct(gestNUM)
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
      
 
@@ -77,7 +78,7 @@ def clock():        # Esta funcion nace como un hilo para llevar un conteo de se
             print ('Fin de reconocimiento')
             break
 
-def init(cScene):
+def init(cScene: Scene):
 
     global x
     global y

@@ -159,7 +159,7 @@ class Scene:
 
         keyboard = Controller()
 
-        n = self.invokeAction(fingerStr) - 1
+        n = fingerStr - 1
         if n == 0 or n == 1:
             os.system(self.command[n] + self._GEST_DICT_[2])
         elif n == 2:

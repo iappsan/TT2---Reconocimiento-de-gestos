@@ -6,6 +6,6 @@ Fecha___
 3,Minimizar ventana,
 4,Aplicacion siguiente,
 5,Minimizar ventana,
-6,Minimizar ventana,
+6,Abrir enlace,https://www.google.com/
 7,Maximizar ventana,
 8,Aplicacion siguiente,
