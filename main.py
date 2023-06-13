@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from datetime import date
 import os
+from PIL import ImageTk, Image
 import proyecto as recognize
 from tkinter import ttk
 
@@ -50,7 +51,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     root.withdraw()
     top = Toplevel()
-    top.geometry("400x600")
+    top.geometry("500x600")
     top.geometry("+400+300")
     top.config(bg=defBG)
     top.title("Configura tu escenario")
@@ -61,7 +62,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         print (len(_temp_list))
         if len(_temp_list) < 9:
 
-            unusedGest = 10             # Buscamos un gesto qeu no haya sido asignado
+            unusedGest = 10             # Buscamos un gesto que no haya sido asignado
             for i in range(9):
                 used = False
                 for gest in _temp_list:
@@ -75,14 +76,15 @@ def windowConfigScene():    # Ventana de configuracion de escenario
             currentScene.updateSceneGestures(1, _temp_list[len(_temp_list)-1])  # Lo mandamos al objeto
             setDropdown(unusedGest)
 
-    def saveScene():
+    def saveScene():        # FAAAAAAAAAALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         pass
 
     # Boton para el inicio del reconocimiento
     b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
-    b.pack(pady=10)
+    b.grid(row=0, column=2, pady=10)
+    # Boton para guardar cambios
     b2 = Button(top, text="Guardar cambios", command=saveScene)
-    b2.pack()
+    b2.grid(row=0, column=3, pady=10)
 
     def updateGest(gestNum, opt, link):
         for gest in _temp_list:
@@ -102,21 +104,44 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
         currentScene.updateSceneGestures(3, [gestNum,'',''])
 
-    def setDropdown(gestList):
+    def getPath():
+        try:
+            path = filedialog.askopenfilename(
+                title="Archivo a vincular",
+                filetypes=(
+                    ("Archivos de texto", "*.txt"),
+                    ("PDF", "*.pdf"),
+                    ("Power Point","*.pptx"),
+                    ("Word","*.docx"),
+                    ("Excel","*.xlsx")
+                ))
+            
+            print (path)
+        except Exception as e:
+            print("No abriste nada")
+            print(e)
 
-        gLabel = Label(top, text=gestList[0], width=30)
-        gLabel.pack(**ipadding, expand=True, fill=BOTH, side=LEFT)
-        actionLinked = StringVar()
-        actionLinked.set(gestList[1])
-        optActMenu = OptionMenu(top, actionLinked, *currentScene.actions)
-        optActMenu.pack(pady=10)
+    def createLink():
+        pass
+
+
+    # COMIENZO DE MENU DE GESTOS
+
+    img = PhotoImage(file= "img/gestures/0.png")
+    gLabel = Label(top, image=img)
+    gLabel.grid(row=1, column=0, padx=5, pady=5)
+
+    action_list = ttk.Combobox(root, width=18, state='readonly')
+    action_list['values'] = currentScene.actions
+    action_list.pack()
+
+    b3 = Button(top, text=' - ', command=getPath)
+    b3.grid(row=rowN, column=2)
+
+    # FIN DE MENU DE GESTOS
 
     for gest in currentScene.gestures:   # Rellena la nueva lista temporal con los gestos para poder tenerlos en
         _temp_list.append(gest)          # tiempo real
-        setDropdown(gest)
-
-    for item in _temp_list:
-        print (item)
 
 
 def windowCreateScene():    # Ventana de creacion de escenario
@@ -205,8 +230,8 @@ menuBar = Menu(root)
 archivoMenu = Menu(menuBar, tearoff=0)
 ayudaMenu = Menu(menuBar, tearoff=0)
 
-archivoMenu.add_command(label="Nuevo")
-archivoMenu.add_command(label="Abrir")
+archivoMenu.add_command(label="Nuevo", command=windowCreateScene)
+archivoMenu.add_command(label="Abrir", command=openFile)
 archivoMenu.add_separator()
 archivoMenu.add_command(label="Salir", command=root.quit)
 
@@ -232,3 +257,47 @@ b3 = Button(root, text="Crear", command=windowCreateScene).pack()
 b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
 
 root.mainloop()
+
+
+
+
+
+# from tkinter import *
+# from PIL import ImageTk, Image
+# import os
+# from escenario import Scene
+# from pynput.keyboard import Key, Controller
+# from PIL import ImageTk, Image
+# from tkinter import ttk
+
+# vall = 0
+
+# currentScene = Scene()
+# vall +=1
+# vall +=1
+
+# keyboard = Controller()
+
+# def updateGest(opt):
+#     print('Hola' + str(action_list.get()))
+#     action_list.set('Jiji')
+
+# root = Tk()
+# l1 = Label(root, text="HOlaaaa").pack()
+# img = ImageTk.PhotoImage(Image.open("img/gestures/0.png"))
+# panel = Label(root, image = img)
+# panel.pack(side = "bottom", fill = "both", expand = "yes")
+
+# action_list = ttk.Combobox(root, width=18, state='readonly')
+# action_list['values'] = currentScene.actions
+# action_list.bind('<<ComboboxSelected>>', updateGest)
+# action_list.pack()
+
+# root.mainloop()
+
+
+
+# if vall == 1 or vall ==5:
+#     print('Hola')
+# else:
+#     print('adios')

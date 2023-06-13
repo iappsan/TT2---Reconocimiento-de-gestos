@@ -3,7 +3,6 @@ import numpy as np
 import mediapipe as mp
 import threading
 import time
-import os
 from pynput.keyboard import Key, Controller
 from escenario import Scene
 
@@ -17,17 +16,6 @@ gestureSec = 0
 lastGesture = ''
 keepOpen = True
 currentScene = Scene()
-actionsDict = [
-    [0, 'Accion', 'Link'],
-    [1, 'Accion', 'Link'],
-    [2, 'Accion', 'Link'],
-    [3, 'Accion', 'Link'],
-    [4, 'Accion', 'Link'],
-    [5, 'Accion', 'Link'],
-    [6, 'Accion', 'Link'],
-    [7, 'Accion', 'Link'],
-    [8, 'Accion', 'Link']
-]
 
 #   Convertimos los booleanos en una cadena simple para ejemplificar los gestos
 def arrayConv(array) -> str:        
