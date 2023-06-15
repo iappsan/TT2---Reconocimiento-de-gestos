@@ -5,7 +5,6 @@ import threading
 from PIL import ImageTk, Image
 import proyecto as recognize
 from tkinter import ttk
-from overlay import Window
 import time
 
 # Importamos la clase del escenario
@@ -138,7 +137,8 @@ def windowConfigScene():    # Ventana de configuracion de escenario
                     ("PDF", "*.pdf"),
                     ("Power Point","*.pptx"),
                     ("Word","*.docx"),
-                    ("Excel","*.xlsx")
+                    ("Excel","*.xlsx"),
+                    ("Cualquier archivo","*.*")
                 ))
             return path
         except Exception as e:

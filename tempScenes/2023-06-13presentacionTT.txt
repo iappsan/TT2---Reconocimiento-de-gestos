@@ -1,0 +1,11 @@
+presentacionTT
+2023-06-13
+0,Abrir archivo,C:/Users/ianni/Desktop/PresentacionTT2.pdf
+1,Siguiente,
+2,Anterior,
+3,Abrir enlace,https://www.youtube.com/watch?v=K9Tx4NOWUSg&pp=ygUUY29udm9sdWNpb24gaW1hZ2VuZXM%3D
+4,Play / Pausa,
+5,Maximizar ventana,
+6,Minimizar ventana,
+7,Aplicacion siguiente,
+8,Aplicacion anterior,
