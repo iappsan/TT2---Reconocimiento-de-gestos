@@ -8,6 +8,11 @@ pynput
 tkinter (pip install tk)
 pyside6
 overlay
+tensorflow
+pandas
+seaborn
+Actualizar sklearn (pip install -U scikit-learn)
 
-## Descripción breve
-EStamos detallando la configuración de escenarios respecto a los vinculos con las acciones
+## Estado actual breve
+El sistema funcioina y ahora estamos implementando tensorflow para 
+un mejor reconocimiento (sustituyendo el metodo de distancia euclidiana)

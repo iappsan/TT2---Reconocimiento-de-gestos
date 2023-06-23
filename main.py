@@ -5,7 +5,7 @@ import threading
 from PIL import ImageTk, Image
 import proyecto as recognize
 from tkinter import ttk
-import time
+import os
 
 # Importamos la clase del escenario
 from escenario import Scene
@@ -78,7 +78,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
             _temp_list.append([unusedGest, '',''])      #lo agregamos con acciones vacias
             currentScene.updateSceneGestures(1, _temp_list[len(_temp_list)-1])  # Lo mandamos al objeto
-            setDropdown(unusedGest)
+            # setDropdown(unusedGest)
 
     def saveScene():        # Solo guarda el escenario desde la clase
         global currentScene
