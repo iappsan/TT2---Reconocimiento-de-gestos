@@ -110,19 +110,21 @@ print('Model saved')
 
 # Reshape our test data on unseen data
 test_labels = test['label']
-test.drop('label', axis=1, inplace=True)
+test.drop('label', axis = 1, inplace = True)
 
 test_images = test.values
-test_images = np.array([np.reshape(i, (28,28)) for i in test_images])
+test_images = np.array([np.reshape(i, (28, 28)) for i in test_images])
 test_images = np.array([i.flatten() for i in test_images])
 
 test_labels = label_binrizer.fit_transform(test_labels)
 
-test_images = test_images.reshape(test_images.shape[0],28,28,1)
+test_images = test_images.reshape(test_images.shape[0], 28, 28, 1)
 
-test_images.shape
+print(test_images.shape)
 
 y_pred = model.predict(test_images)
+print (y_pred.round())
+print (test_labels)
 
 # Get our accuracy score
 from sklearn.metrics import accuracy_score

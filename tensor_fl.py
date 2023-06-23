@@ -1,6 +1,6 @@
 import keras
-from sklearn.model_selection import train_test_split
 import cv2
+import numpy as np
 
 # Load the model
 model = keras.models.load_model("modeloGestos.h5")
@@ -61,9 +61,11 @@ while True:
 
     roi = roi.reshape(1,28,28,1)
 
-    result = str(model.predict(roi, verbose=0)[0])
+    # result = str(model.predict_classes(roi, verbose=0)[0])
+    predictions = np.argmax(model.predict(roi, verbose=0), axis=-1)
+    print (predictions)
     cv2.putText(copy, 
-                getLetter(result), 
+                getLetter(predictions), 
                 (300,100), 
                 cv2.FONT_HERSHEY_COMPLEX,
                 2,
