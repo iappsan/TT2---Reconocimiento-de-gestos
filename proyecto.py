@@ -6,6 +6,8 @@ import threading
 import time
 from pynput.keyboard import Key, Controller
 from escenario import Scene
+from numpy import asfarray
+from win32api import GetSystemMetrics
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -123,7 +125,7 @@ def clock():        # Esta funcion nace como un hilo para llevar un conteo de se
     while True:
         print('Segundo {}, gesto {}'.format(timeInSecs, lastGesture))
         timeInSecs = timeInSecs +1
-        time.sleep(1)
+        time.sleep(.8)
         if not keepOpen:
             print ('Fin de reconocimiento')
             break
@@ -239,6 +241,47 @@ def init(cScene: Scene):
         cap.release()
         cv2.destroyAllWindows()
 
+def predict(imagen,model):
+  result = np.argmax(model.predict(imagen) > 0.5).astype("int32")
+  #print(result)
+  if result == 0:
+    return "CincoDedos"
+  elif result == 1:
+    return "Punio"
+
+def ampliarImagen(imagen,width,height):
+    return cv2.resize(imagen, (width,height), interpolation = cv2.INTER_AREA) 
+
+def recorteImagen(imagen,results,width,height):
+    puntos = {'x':[],'y':[]}
+    for hand_landmarks in results.multi_hand_landmarks:
+        for cont in range(21):
+            puntos["x"].append(hand_landmarks.landmark[cont].x)
+            puntos["y"].append(hand_landmarks.landmark[cont].y)
+
+    xL = int(width*(min(puntos['x'])))-50
+    xR = int(width*(max(puntos['x'])))+50
+    yB = int(height*(max(puntos['y'])))+50
+    yT = int(height*(min(puntos['y'])))-50
+    if xL < 0: 
+        xL = 0
+    if xR > width: 
+        xR = width
+    if yT < 0: 
+        yT = 0
+    if yB > height: 
+        yB = height
+    #print(xL,xR,yT,yB)
+    imageCrop = imagen[yT:yB,xL:xR]
+    dim = (50, 50)                        
+    # resize image
+    try:
+        resized = cv2.resize(imageCrop, dim, interpolation = cv2.INTER_AREA)  
+    except Exception as e:
+        print(str(e))
+    
+    return resized
+
 def init2(cScene: Scene):
     
     global x
@@ -248,12 +291,11 @@ def init2(cScene: Scene):
     global currentScene
 
     currentScene = cScene
-
     timer = threading.Thread(target=clock)
     timer.start()
 
     # Carga el modelo
-    model = keras.models.load_model("modeloGestos.h5")
+    model = keras.models.load_model("modelo.h5")
     print('Modelo cargado')
 
     cap = cv2.VideoCapture(0)
@@ -261,43 +303,44 @@ def init2(cScene: Scene):
     # Aqui obtenemos el tamano de X y Y
     x = int (cap.get(3))
     y = int (cap.get(4))
-    print('x: {}, y {}'.format(x,y))
+    #print('x: {}, y {}'.format(x,y))
 
-    while True:
-        ret, frame = cap.read()
+    with mp_hands.Hands(
+        model_complexity=0,
+        min_detection_confidence=0.5,
+        max_num_hands=1,
+        min_tracking_confidence=0.5
+        ) as hands:
 
-        # frame = cv2.flip(frame,1)
-
-        # Define region of interest
-        roi = frame[100:400, 320:620]
-        cv2.imshow('roi', roi)
-        roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-        roi = cv2.resize(roi, (28,28), interpolation = cv2.INTER_AREA)
-
-        cv2.imshow('roi scaled and gray', roi)
-        copy = frame.copy()
-        cv2.rectangle(copy, (320,100), (620,400), (255,0,0), 5)
-
-        roi = roi.reshape(1,28,28,1)
-
-        # result = str(model.predict_classes(roi, verbose=0)[0])
-        prediction = np.argmax(model.predict(roi, verbose=0), axis=-1)
-        print (prediction)
-        cv2.putText(copy, 
-                    currentScene.getLetter(prediction), 
-                    (300,100), 
-                    cv2.FONT_HERSHEY_COMPLEX,
-                    2,
-                    (0,255,0),
-                    2
-                    )
-        cv2.imshow('frame', copy)
-
-        if cv2.waitKey(1) == 13: # Enter
-            break
-
+        while True:
+            ret, frame = cap.read()
+            if ret == False:
+                break
+            height, width, _ = frame.shape
+            frame = cv2.flip(frame, 1)            
+            lastGesture = ""
+            results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            imagen = frame[0:50,0:50]
+            if results.multi_hand_landmarks is not None:
+                imagen = recorteImagen(frame,results,width,height)
+                numpydata = asfarray(imagen,dtype='float32')
+                x = np.expand_dims(numpydata, axis=0)
+                lastGesture = predict(x,model)
+                #print(result)
+            else:
+                frame = frame[0:600,0:600]
+                imagen = cv2.resize(frame, (200,200), interpolation = cv2.INTER_AREA) 
+            imagen = ampliarImagen(imagen,200,200)
+            cv2.putText(imagen,lastGesture,(20,20),cv2.FONT_HERSHEY_DUPLEX,.7,(51,184,255),2)   
+            anchoPantalla = GetSystemMetrics(0)
+            altoPantalla = GetSystemMetrics(1)
+            cv2.imshow("Mano",imagen)  
+            cv2.moveWindow("Mano", anchoPantalla-200,altoPantalla-300)
+            #cv2.imshow('frame', frame)
+            if cv2.waitKey(1) & 0xFF == 13:
+                break
     cap.release()
     cv2.destroyAllWindows
 
 if __name__ == '__main__':
-    init(currentScene)
+    init2(currentScene)
