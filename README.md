@@ -8,7 +8,8 @@ pynput
 tkinter (pip install tk)
 pyside6
 overlay
-tensorflow
+tensorflow   2.5
+keras 2.2.5
 pandas
 seaborn
 Actualizar sklearn (pip install -U scikit-learn)

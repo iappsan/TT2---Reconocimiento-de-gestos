@@ -7,6 +7,7 @@ import proyecto as recognize
 from tkinter import ttk
 import os
 
+
 # Importamos la clase del escenario
 from escenario import Scene
 
@@ -17,9 +18,16 @@ currentScene = Scene()
 tempDirectory = 'tempScenes/'
 ipadding = {'ipadx': 10, 'ipady': 10}
 
-class RoundedButton(tk.Canvas):
+colorFondo = "#60656F"
+colorFuente = "#F7F7FF"
+tercerColor = "#279AF1"
+cuartoColor = "#C49991"
+nombreEscenario = ""
+rutaEscenario = ""
 
-    def __init__(self, master=None, text:str="", radius=30, btnforeground=colorFuente, btnbackground=colorFondo, clicked=None, *args, **kwargs):
+class RoundedButton(Canvas):
+
+    def __init__(self, master=None, text:str="", ancho=240,radius=30, btnforeground=colorFuente, btnbackground=colorFondo, clicked=None, *args, **kwargs):
         super(RoundedButton, self).__init__(master, *args, **kwargs)
         self.config(bg=self.master["bg"])
         self.btnbackground = btnbackground
@@ -27,7 +35,7 @@ class RoundedButton(tk.Canvas):
         
         self.radius = radius        
         self['height']=50                   #Tamaño alto
-        self['width']=240                   #Tamaño largo
+        self['width']=ancho                   #Tamaño ancho
         self['highlightthickness'] = 0      #Quitar margen canvas
         
         self.rect = self.round_rectangle(0, 0, 0, 0, tags="button", radius=radius, fill=btnbackground)
@@ -108,23 +116,48 @@ class RoundedButton(tk.Canvas):
             self.itemconfig(self.rect, fill=self.btnbackground)
 
 
-
-
 # Crear funciones
 def newWindow():            # Template para nuevas ventanas
     # root.withdraw()
     top2 = Toplevel()
-    top2.geometry("400x200")
+    anchoVentana = 400         #Definir medidas de ventana
+    altoVentana = 200
+    xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
+    yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
+    posicion = str(anchoVentana) + "x" + str(altoVentana) + \
+        "+" + str(xVentana) + "+" + str(yVentana)
     top2.title("root nueva")
+    top2.geometry(posicion)
     button = Button(top2, text="OK", command=top2.destroy).pack()
+
+def siguienteImagen():
+    print("Imagen siguiente")
+
+def anteriorImagen():
+    print("Imagen anterior")
 
 def windowHelp():           # Ventana de ayuda
     top = Toplevel()
-    top.geometry("400x200")
-    top.config(bg=defBG)
+    top.overrideredirect(True) # Quitar barra de título
+    anchoVentana = 800         #Definir medidas de ventana
+    altoVentana = 600
+    xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
+    yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
+    posicion = str(anchoVentana) + "x" + str(altoVentana) + \
+        "+" + str(xVentana) + "+" + str(yVentana)
+    top.geometry(posicion)
+    top.config(bg=colorFondo)
     top.title("Ayuda")
-    label1 = Label(top, text="Aqui debe aparecer texto o imagenes con ayuda", bg=defBG, fg=defFontColor).pack(pady=15)
-    button = Button(top, text="Cerrar", command=top.destroy).place(relx=0.4, rely=0.5)
+
+    ttk.Label(top, text="Ayuda", style="Label.TLabel" ).grid(row=0, column=0, pady=30)
+    ttk.Label(top, text="Aqui debe aparecer texto o imagenes con ayuda", style="Label2.TLabel" ).grid(row=1, column=0, columnspan=3)
+    RoundedButton(top,text="<", radius=40, btnbackground=colorFondo, btnforeground=cuartoColor, clicked=anteriorImagen).grid(row=2, column=0)
+    canv = Canvas(top, width=300, height=300, bg=colorFondo)
+    canv.grid(row=2, column=1)
+    img = ImageTk.PhotoImage(Image.open("img/gestures/2.png"))  # PIL solution
+    canv.create_image(20,20, anchor=NW, image=img)
+    RoundedButton(top,text=">", ancho=240,radius=40, btnbackground=colorFondo, btnforeground=cuartoColor, clicked=siguienteImagen).grid(row=2, column=2)
+    RoundedButton(top,text="Cerrar Ayuda", ancho=240, radius=40, btnbackground=tercerColor, btnforeground=colorFuente, clicked=top.destroy).grid(row=4, column=2, pady=50)
 
 def windowConfigScene():    # Ventana de configuracion de escenario
     global currentScene
@@ -147,9 +180,17 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
     root.withdraw()
     top = Toplevel()
-    top.geometry("900x600")
-    top.geometry("+400+300")
-    top.config(bg=defBG)
+    #top.geometry("900x600")
+    #top.geometry("+400+300")
+    anchoVentana = 900         #Definir medidas de ventana
+    altoVentana = 600
+    xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
+    yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
+    posicion = str(anchoVentana) + "x" + str(altoVentana) + \
+        "+" + str(xVentana) + "+" + str(yVentana)
+    top.title("root nueva")
+    top.geometry(posicion)
+    top.config(bg=colorFondo)
     top.title("Configura tu escenario")
     top.protocol('WM_DELETE_WINDOW', onClosing)
 
@@ -206,13 +247,13 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
 
     # Boton para el inicio del reconocimiento
-    b = Button(top, text="Iniciar reconocimiento", command=initRecognize)
+    b = RoundedButton(top,text="Iniciar reconocimiento",ancho=260 ,radius=20, btnbackground=cuartoColor, btnforeground=colorFuente, clicked=initRecognize)
     b.grid(row=0, column=2, pady=10)
     # Boton para guardar cambios
-    b2 = Button(top, text="Guardar cambios", command=saveScene)
+    b2 = RoundedButton(top,text="Guardar cambios",ancho=240 , radius=20, btnbackground=cuartoColor, btnforeground=colorFuente, clicked=saveScene)
     b2.grid(row=0, column=3, pady=10)
     # Boton para actualizar etiquetas
-    b3 = Button(top, text="Actualizar", command=refreshScene)
+    b3 = RoundedButton(top,text="Actualizar",ancho=240 , radius=20, btnbackground=tercerColor, btnforeground=colorFuente, clicked=refreshScene)
     b3.grid(row=0, column=5, pady=10)
 
     def splitPaths(pathToSplit: str):
@@ -437,12 +478,12 @@ def windowCreateScene():    # Ventana de creacion de escenario
     top = Toplevel(root)
     top.geometry("400x200")
     top.geometry("+400+400")
-    top.config(bg=defBG)
+    top.config(bg=colorFondo)
     top.title("Crear un nuevo escenario")
     # frame2 = Frame(top, bd=5, relief="sunken", padx=20, pady=20).pack()
     l1 = Label(top, 
                      text="Nombre del escenario:", 
-                     bg=defBG, 
+                     bg=colorFondo, 
                      fg=defFontColor)
     l1.grid(row=0,column=0)
     l2 = Label(top,
@@ -519,6 +560,7 @@ root = Tk()
 
 # Crear menu superior
 menuBar = Menu(root)
+"""
 archivoMenu = Menu(menuBar, tearoff=0)
 ayudaMenu = Menu(menuBar, tearoff=0)
 
@@ -531,21 +573,39 @@ ayudaMenu.add_command(label="Ayuda")
 
 menuBar.add_cascade(label="Archivo", menu=archivoMenu)
 menuBar.add_cascade(label="Ayuda", menu=ayudaMenu)
-
+"""
 # Configurar la root principal
 root.title("RGM OPMA") # Reconocimiento de gestos manuales para la organización y presentación de material audiovisual
-root.geometry("500x300")
-root.geometry("+750+300")
+#root.geometry("500x300")
+#root.geometry("+750+300")
+anchoVentana = 580         #Definir medidas de ventana
+altoVentana = 380
+xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de laventana
+yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
+posicion = str(anchoVentana) + "x" + str(altoVentana) + \
+    "+" + str(xVentana) + "+" + str(yVentana)
+root.geometry(posicion)
 root.resizable(False,False)
-root.config(bg=defBG, menu=menuBar)
+root.config(bg=colorFondo, menu=menuBar)
 
 # Crear un contenido principal
-label1 = Label(root, text="Bienvenido!", bg=defBG, fg=defFontColor).pack(pady=15)
-label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=defBG, fg=defFontColor).pack()
+s = ttk.Style()
+s.configure('Label.TLabel',
+        background = colorFondo,
+        foreground = colorFuente,
+        font=('Century Gothic', 16))
+ttk.Label(root, text="Menú principal", style="Label.TLabel").grid(row=0, column=0,pady=20,padx=5)
+#label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=defBG, fg=defFontColor).grid(row=1, column=0,pady=20,padx=20)
 
-b2 = Button(root, text="Abrir", command=openFile).pack(pady=(50,10))
-b3 = Button(root, text="Crear", command=windowCreateScene).pack()
+RoundedButton(root,text="Abrir/Editar Escenario",ancho=240 , radius=40, btnbackground=tercerColor, btnforeground=colorFuente, clicked=openFile).grid(row=2, column=1,pady=40)
+RoundedButton(root,text="Nuevo Escenario",ancho=240 , radius=40, btnbackground=tercerColor, btnforeground=colorFuente, clicked=windowCreateScene).grid(row=3, column=1)
+
+
+#b2 = Button(root, text="Abrir", command=openFile).grid(row=2, column=0,pady=20,padx=20)
+#b3 = Button(root, text="Crear", command=windowCreateScene).grid(row=3, column=0,pady=20,padx=20)
 # b4 = Button(root, text="config", command=windowConfigScene).pack()
-b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).place(x=450, y=10)
+
+#b5 = Button(root, text="?", bg=defBG, fg=defFontColor, command=windowHelp).grid(row=0, column=2,pady=20,padx=20)
+b5 = RoundedButton(root, text="?",ancho=240 , radius=40,btnbackground=colorFondo, btnforeground=colorFuente, clicked=windowHelp).grid(row=0, column=2)
 
 root.mainloop()
