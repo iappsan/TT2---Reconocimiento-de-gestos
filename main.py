@@ -51,7 +51,7 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         # label = tk.Label(win.root, text="Overlay locochon")
         # label.pack()
         # win.launch()
-        recognize.init(currentScene)
+        recognize.init2(currentScene)
 
     root.withdraw()
     top = Toplevel()

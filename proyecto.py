@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import keras
 import mediapipe as mp
 import threading
 import time
@@ -14,6 +15,7 @@ x = 0
 timeInSecs = 0
 gestureSec = 0
 lastGesture = ''
+lastGesture2 = 0
 keepOpen = True
 currentScene = Scene()
 
@@ -28,7 +30,7 @@ def arrayConv(array) -> str:
     # print (resultStr)
     return resultStr
 
-def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por medio de un contador y cuando pase, ejecutamos la accion
+def secVal(actualGesture: str):      # Validamos que el gesto dure 3 segundos por medio de un contador y cuando pase, ejecutamos la accion
     global lastGesture
     global gestureSec
     global keepOpen
@@ -47,6 +49,49 @@ def secVal(actualGesture):      # Validamos que el gesto dure 3 segundos por med
             elif gestNUM < 10:
                 print('Ejecutando gesto '+ str(gestNUM-1))
                 currentScene.execAct(gestNUM)
+            else:
+                currentScene.overlayStuff[0] = 'Este gesto no se acepta'
+            gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
+     
+def secVal2(actualGesture: int):      # Validamos que el gesto dure 3 segundos por medio de un contador y cuando pase, ejecutamos la accion
+    global lastGesture2               # Funcion unicamente para equivalencia del metodo con red neuronal
+    global gestureSec
+    global keepOpen
+    global currentScene
+
+    def equiv(n):
+        m = 10
+        if n == 0:
+            m = 1
+        elif n == 3:
+            m = 2
+        elif n == 20:
+            m = 3
+        elif n == 5:
+            m = 4
+        elif n == 1:
+            m = 5
+        ## AQUI Falta gesto 5
+        elif n == 10:
+            m = 7
+        elif n == 23:
+            m = 8
+        ## AQUI falta gesto 8
+        return m
+
+    if lastGesture2 != actualGesture:
+        lastGesture2 = actualGesture
+        gestureSec = timeInSecs
+    else:
+        if timeInSecs == (gestureSec + 3):
+            currentScene.overlayStuff[0] = 'Reconociendo gesto: '+str(actualGesture)
+            gestName = currentScene.getLetter(actualGesture)
+            if actualGesture == 0:
+                keepOpen = False
+                lastGesture2 = 0
+            elif equiv(actualGesture) < 10:
+                print(gestName)
+                currentScene.execAct(equiv(actualGesture))
             else:
                 currentScene.overlayStuff[0] = 'Este gesto no se acepta'
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
@@ -108,6 +153,7 @@ def init(cScene: Scene):
         model_complexity=0,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
+
         while cap.isOpened() and keepOpen:
             success, image = cap.read()
             cv2.putText(image, 
@@ -192,6 +238,66 @@ def init(cScene: Scene):
                 break
         cap.release()
         cv2.destroyAllWindows()
+
+def init2(cScene: Scene):
+    
+    global x
+    global y
+    global lastGesture
+    global keepOpen
+    global currentScene
+
+    currentScene = cScene
+
+    timer = threading.Thread(target=clock)
+    timer.start()
+
+    # Carga el modelo
+    model = keras.models.load_model("modeloGestos.h5")
+    print('Modelo cargado')
+
+    cap = cv2.VideoCapture(0)
+
+    # Aqui obtenemos el tamano de X y Y
+    x = int (cap.get(3))
+    y = int (cap.get(4))
+    print('x: {}, y {}'.format(x,y))
+
+    while True:
+        ret, frame = cap.read()
+
+        # frame = cv2.flip(frame,1)
+
+        # Define region of interest
+        roi = frame[100:400, 320:620]
+        cv2.imshow('roi', roi)
+        roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+        roi = cv2.resize(roi, (28,28), interpolation = cv2.INTER_AREA)
+
+        cv2.imshow('roi scaled and gray', roi)
+        copy = frame.copy()
+        cv2.rectangle(copy, (320,100), (620,400), (255,0,0), 5)
+
+        roi = roi.reshape(1,28,28,1)
+
+        # result = str(model.predict_classes(roi, verbose=0)[0])
+        prediction = np.argmax(model.predict(roi, verbose=0), axis=-1)
+        print (prediction)
+        cv2.putText(copy, 
+                    currentScene.getLetter(prediction), 
+                    (300,100), 
+                    cv2.FONT_HERSHEY_COMPLEX,
+                    2,
+                    (0,255,0),
+                    2
+                    )
+        cv2.imshow('frame', copy)
+
+        if cv2.waitKey(1) == 13: # Enter
+            break
+
+    cap.release()
+    cv2.destroyAllWindows
 
 if __name__ == '__main__':
     init(currentScene)

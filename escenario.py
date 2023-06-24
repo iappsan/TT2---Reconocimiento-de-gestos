@@ -42,6 +42,41 @@ class Scene:
         for x in range(9):
             self._GEST_DICT_.append([x, '', ''])    
 
+    # Funcion para encontrar gesto por modelo de TF
+    def getLetter(result):
+        classLabels = {
+            0: 'Puno cerrado',
+            1: 'Cuatro dedos',
+            2: 'C',
+            3: 'Dedo indice',
+            4: 'E',
+            5: 'Tres dedos',
+            6: 'G',
+            7: 'H',
+            8: 'I',
+            9: 'K',
+            10: 'Apuntar/Ele',
+            11: 'M',
+            12: 'N',
+            13: 'O',
+            14: 'P',
+            15: 'Q',
+            16: 'R',
+            17: 'S',
+            18: 'T',
+            19: 'U',
+            20: 'Dos dedos',
+            21: 'W',
+            22: 'X',
+            23: 'Llama'
+        }
+        try:
+            res = int(result)
+            return classLabels[res]
+        except:
+            print(result)
+            return "Error"
+
     def loadScene(self, path):
         self.FILEPATH = path
         print("Leyendo escenario ...")
