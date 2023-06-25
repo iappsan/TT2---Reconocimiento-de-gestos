@@ -129,6 +129,8 @@ def newWindow():            # Template para nuevas ventanas
         "+" + str(xVentana) + "+" + str(yVentana)
     top2.title("root nueva")
     top2.geometry(posicion)
+    top2.resizable(False, False)    #La ventana no se puede alargar ni ensanchar
+
     button = Button(top2, text="OK", command=top2.destroy).pack()
 
 def siguienteImagen():
@@ -147,6 +149,7 @@ def windowHelp():           # Ventana de ayuda
     posicion = str(anchoVentana) + "x" + str(altoVentana) + \
         "+" + str(xVentana) + "+" + str(yVentana)
     top.geometry(posicion)
+    top.resizable(False, False)    #La ventana no se puede alargar ni ensanchar
     top.config(bg=colorFondo)
     top.title("Ayuda")
 
@@ -185,13 +188,14 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     #top.geometry("900x600")
     #top.geometry("+400+300")
     anchoVentana = 800       #Definir medidas de ventana
-    altoVentana = 700
+    altoVentana = 650
     xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
     yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
     posicion = str(anchoVentana) + "x" + str(altoVentana) + \
         "+" + str(xVentana) + "+" + str(yVentana)
     top.title("root nueva")
     top.geometry(posicion)
+    top.resizable(False, False)    #La ventana no se puede alargar ni ensanchar
     top.config(bg=colorFondo)
     top.title("Configura tu escenario")
     top.protocol('WM_DELETE_WINDOW', onClosing)
@@ -283,17 +287,25 @@ def windowConfigScene():    # Ventana de configuracion de escenario
     def getLink(gestNum, opt):
         top2 = Toplevel()
         top2.geometry("400x200")
-        top2.title("Ingresa el link")
+        anchoVentana = 400       #Definir medidas de ventana
+        altoVentana = 150
+        xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
+        yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
+        posicion = str(anchoVentana) + "x" + str(altoVentana) + \
+            "+" + str(xVentana) + "+" + str(yVentana)
+        top2.geometry(posicion)
+        top2.config(bg=colorFondo)
+        top2.resizable(False, False)    #La ventana no se puede alargar ni ensanchar
+        top2.title("Ingresa el enlace")
 
         def close_window():
             global currentScene
             currentScene.updateSceneGestures(2, [gestNum, opt, E.get()])
             top2.destroy()
 
-        E = Entry(top2)
-        E.pack(anchor = CENTER)
-        B = Button(top2, text = "Enviar", command = close_window)
-        B.pack(anchor = S)
+        E= Entry(top2,width=58)
+        E.grid(row=0,padx= 20, pady=20)
+        RoundedButton(top2,text="Guardar Enlace",ancho=200 , radius=40, btnbackground=quintoColor, btnforeground=colorFuente, clicked=close_window).grid(row=1)
 
     def updateGest(gestNum, opt, link):
         global currentScene
@@ -487,6 +499,7 @@ def windowCreateScene():    # Ventana de creacion de escenario
     posicion = str(anchoVentana) + "x" + str(altoVentana) + \
         "+" + str(xVentana) + "+" + str(yVentana)
     top.geometry(posicion)
+    top.resizable(False, False)    #La ventana no se puede alargar ni ensanchar
     top.config(bg=colorFondo)
     top.title("Crear un nuevo escenario")
     # frame2 = Frame(top, bd=5, relief="sunken", padx=20, pady=20).pack()
@@ -514,7 +527,7 @@ def windowCreateScene():    # Ventana de creacion de escenario
         top.destroy()
         windowConfigScene()
 
-    e1 = Entry(top)
+    e1 = Entry(top,width=25)
     e1.grid(row=0, column=1, pady=30, padx=20)
     e1.focus()
     lbl3 = ttk.Label(top, text=date.today(), style="Label.TLabel")
