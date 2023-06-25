@@ -25,6 +25,17 @@ cuartoColor = "#e7e7e7"
 quintoColor = "#4CAF50"
 nombreEscenario = ""
 rutaEscenario = ""
+manual = ["principal.png","crearNuevo.png","abrir.png","configuracion.png","guardarEnlace.png","reconocimiento.png"]
+manulActual = 0
+textoManual = [
+    "Al iniciar el sistema podrás abrir, editar o crear un nuevo escenario con los botones centrales, o abrir la ayuda con el botón ?",
+    "Para crear un nuevo escenario solo es necesario el nombre del nuevo escenario, se coloca automáticamente la fecha del día",
+    "Para abrir un escenario,selecciona el archivo con el nombre del escenario que requieras",
+    "Para editar el escenario, selecciona la acción a realizar con cada gesto que necesites",
+    "Si requieres colocar un enlace, se abrirá una ventana para colocarlo",
+    "Al presionar 'Iniciar reconocimiento', se abrirá una ventana al inferior derecho de la pantalla para visualizar el gesto identificado"
+]
+
 
 class RoundedButton(Canvas):
 
@@ -133,17 +144,45 @@ def newWindow():            # Template para nuevas ventanas
 
     button = Button(top2, text="OK", command=top2.destroy).pack()
 
-def siguienteImagen():
-    print("Imagen siguiente")
+def siguienteImagen(top,lblImage,texto):
+    global manulActual
+    manulActual = manulActual + 1
+    if (manulActual == len(manual) ):
+        manulActual = 0
+    insertarImagen(top,lblImage,texto)
 
-def anteriorImagen():
-    print("Imagen anterior")
+
+
+def anteriorImagen(top,lblImage,texto):
+    global manulActual
+    manulActual = manulActual - 1
+    if (manulActual < -1 ):
+        manulActual = len(manual) - 1
+    insertarImagen(top,lblImage,texto)
+
+
+
+def insertarImagen(top,lblImage,texto):
+    img = PhotoImage(file= "img/manual/"+manual[manulActual])
+    if manulActual < 2 :
+        img = img.subsample(1,1)
+    elif manulActual < len(manual) - 1 :
+        img = img.subsample(2,2)
+    else:
+        img = img.subsample(3,3)
+    lblImg = Label(top,background=colorFondo,borderwidth=1,image=img,width=900,height=520)
+    lblImage.image = img
+    lblImg.grid(row=1,column=1)
+    texto.set(textoManual[manulActual])
 
 def windowHelp():           # Ventana de ayuda
+    global manulActual 
+    texto = StringVar()
+    manulActual = 0
     top = Toplevel()
     top.overrideredirect(True) # Quitar barra de título
-    anchoVentana = 800         #Definir medidas de ventana
-    altoVentana = 600
+    anchoVentana = 1200         #Definir medidas de ventana
+    altoVentana = 700
     xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
     yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
     posicion = str(anchoVentana) + "x" + str(altoVentana) + \
@@ -152,16 +191,14 @@ def windowHelp():           # Ventana de ayuda
     top.resizable(False, False)    #La ventana no se puede alargar ni ensanchar
     top.config(bg=colorFondo)
     top.title("Ayuda")
-
-    ttk.Label(top, text="Ayuda", style="Label.TLabel" ).grid(row=0, column=0, pady=30)
-    ttk.Label(top, text="Aqui debe aparecer texto o imagenes con ayuda", style="Label2.TLabel" ).grid(row=1, column=0, columnspan=3)
-    RoundedButton(top,text="<", radius=40, btnbackground=colorFondo, btnforeground=cuartoColor, clicked=anteriorImagen).grid(row=2, column=0)
-    canv = Canvas(top, width=300, height=300, bg=colorFondo)
-    canv.grid(row=2, column=1)
-    img = ImageTk.PhotoImage(Image.open("img/gestures/2.png"))  # PIL solution
-    canv.create_image(20,20, anchor=NW, image=img)
-    RoundedButton(top,text=">", ancho=240,radius=40, btnbackground=colorFondo, btnforeground=cuartoColor, clicked=siguienteImagen).grid(row=2, column=2)
-    RoundedButton(top,text="Cerrar Ayuda", ancho=240, radius=40, btnbackground=tercerColor, btnforeground=colorFuente, clicked=top.destroy).grid(row=4, column=2, pady=50)
+    lblImg = Label(top,background=colorFondo,borderwidth=1,width=900,height=520)
+    insertarImagen(top,lblImg,texto)
+    ttk.Label(top, text="Manual", style="Label.TLabel" ).grid(row=0, column=0,padx = 30,pady=15)
+    lblTexto = ttk.Label(top, textvariable=texto, background=colorFondo,foreground=colorFuente,style="Label2.TLabel" )
+    lblTexto.grid(row=3, column=0, columnspan=3)
+    RoundedButton(top,text="<",ancho=50, radius=10, btnbackground=cuartoColor, btnforeground=colorFondo, clicked=lambda:anteriorImagen(top,lblImg,texto)).grid(row=1, column=0)
+    RoundedButton(top,text=">",ancho=50,radius=10, btnbackground=cuartoColor, btnforeground=colorFondo, clicked=lambda:siguienteImagen(top,lblImg,texto)).grid(row=1, column=2)
+    RoundedButton(top,text="Cerrar Manual", ancho=200, radius=40, btnbackground="red", btnforeground=colorFuente, clicked=top.destroy).grid(row=4, column=1,sticky='e')
 
 def windowConfigScene():    # Ventana de configuracion de escenario
     global currentScene
@@ -609,6 +646,11 @@ s.configure('Label.TLabel',
         background = colorFondo,
         foreground = colorFuente,
         font=('Century Gothic', 16))
+s2 = ttk.Style()
+s2.configure('Label2.TLabel',
+        background = colorFondo,
+        foreground = colorFuente,
+        font=('Century Gothic', 12))
 ttk.Label(root, text="Menú principal", style="Label.TLabel").grid(row=0, column=0,pady=20,padx=5)
 #label2 = Label(root, text="Abre o crea un nuevo escenario para continuar:", bg=defBG, fg=defFontColor).grid(row=1, column=0,pady=20,padx=20)
 
