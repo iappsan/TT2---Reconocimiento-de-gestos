@@ -56,7 +56,7 @@ def secVal(actualGesture: str):      # Validamos que el gesto dure 3 segundos po
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
      
 def secVal2(actualGesture: int):      # Validamos que el gesto dure 3 segundos por medio de un contador y cuando pase, ejecutamos la accion
-    global lastGesture2               # Funcion unicamente para equivalencia del metodo con red neuronal
+    global lastGesture            # Funcion unicamente para equivalencia del metodo con red neuronal
     global gestureSec
     global keepOpen
     global currentScene
@@ -81,21 +81,50 @@ def secVal2(actualGesture: int):      # Validamos que el gesto dure 3 segundos p
         ## AQUI falta gesto 8
         return m
 
-    if lastGesture2 != actualGesture:
-        lastGesture2 = actualGesture
+    if lastGesture != actualGesture:
+        lastGesture = actualGesture
         gestureSec = timeInSecs
     else:
         if timeInSecs == (gestureSec + 3):
             currentScene.overlayStuff[0] = 'Reconociendo gesto: '+str(actualGesture)
-            gestName = currentScene.getLetter(actualGesture)
+            gestName = actualGesture
             if actualGesture == 0:
                 keepOpen = False
                 lastGesture2 = 0
             elif equiv(actualGesture) < 10:
                 print(gestName)
-                currentScene.execAct(equiv(actualGesture))
+                currentScene.execAct(1)
             else:
                 currentScene.overlayStuff[0] = 'Este gesto no se acepta'
+            gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
+     
+def secVal3(actualGesture: str):      # Validamos que el gesto dure 3 segundos por medio de un contador y cuando pase, ejecutamos la accion
+    global lastGesture                # Funcion unicamente para equivalencia del metodo con red neuronal
+    global gestureSec
+    global keepOpen
+    global currentScene
+
+    def equiv(gesto):
+        m = 10
+        if gesto == "CincoDedos":
+            pass
+        elif gesto == "Punio":
+            pass
+
+
+    if lastGesture != actualGesture:
+        lastGesture = actualGesture
+        gestureSec = timeInSecs
+    else:
+        if timeInSecs == (gestureSec + 3):
+            currentScene.overlayStuff[0] = 'Reconociendo gesto: '+str(actualGesture)
+            lastGesture = ''
+            if actualGesture == "CincoDedos":
+                keepOpen = False
+            elif actualGesture == "Punio":
+                currentScene.execAct(1)
+            else:           #No hay gesto
+                pass
             gestureSec = 0      # Reiniciamos el contador para que solo se ejecute una vez la accion
      
 
@@ -125,7 +154,7 @@ def clock():        # Esta funcion nace como un hilo para llevar un conteo de se
     while True:
         print('Segundo {}, gesto {}'.format(timeInSecs, lastGesture))
         timeInSecs = timeInSecs +1
-        time.sleep(.8)
+        time.sleep(1)
         if not keepOpen:
             print ('Fin de reconocimiento')
             break
@@ -230,12 +259,11 @@ def init(cScene: Scene):
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
            
-            # Si no se detecta ninguna mano, seteamos el ultimo gesto reconocido a vacio
+            # Si no se detecta ninguna mano, se indica el ultimo gesto reconocido como vacio
             else: 
                 lastGesture = ''
-            # Voltea la imagen horizontalmente
             cv2.imshow('RGM', image)
-            if cv2.waitKey(5) & 0xFF == ord('q'):       # Si presionamos la tecla Q, salimos
+            if cv2.waitKey(5) & 0xFF == 13:       # Si presionamos Enter
                 keepOpen = False
                 break
         cap.release()
@@ -248,6 +276,7 @@ def predict(imagen,model):
     return "CincoDedos"
   elif result == 1:
     return "Punio"
+  else: return ""
 
 def ampliarImagen(imagen,width,height):
     return cv2.resize(imagen, (width,height), interpolation = cv2.INTER_AREA) 
@@ -318,26 +347,30 @@ def init2(cScene: Scene):
                 break
             height, width, _ = frame.shape
             frame = cv2.flip(frame, 1)            
-            lastGesture = ""
+            actualGesture = ""
             results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             imagen = frame[0:50,0:50]
             if results.multi_hand_landmarks is not None:
                 imagen = recorteImagen(frame,results,width,height)
                 numpydata = asfarray(imagen,dtype='float32')
                 x = np.expand_dims(numpydata, axis=0)
-                lastGesture = predict(x,model)
+                actualGesture = predict(x,model)
+                secVal3(actualGesture)
                 #print(result)
             else:
+                lastGesture = ""
+                actualGesture = ""
                 frame = frame[0:600,0:600]
                 imagen = cv2.resize(frame, (200,200), interpolation = cv2.INTER_AREA) 
             imagen = ampliarImagen(imagen,200,200)
-            cv2.putText(imagen,lastGesture,(20,20),cv2.FONT_HERSHEY_DUPLEX,.7,(51,184,255),2)   
+            cv2.putText(imagen,actualGesture,(20,20),cv2.FONT_HERSHEY_DUPLEX,.7,(51,184,255),2)   
             anchoPantalla = GetSystemMetrics(0)
             altoPantalla = GetSystemMetrics(1)
             cv2.imshow("Mano",imagen)  
             cv2.moveWindow("Mano", anchoPantalla-200,altoPantalla-300)
             #cv2.imshow('frame', frame)
             if cv2.waitKey(1) & 0xFF == 13:
+                keepOpen = False
                 break
     cap.release()
     cv2.destroyAllWindows

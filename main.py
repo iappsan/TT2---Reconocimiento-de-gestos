@@ -20,8 +20,9 @@ ipadding = {'ipadx': 10, 'ipady': 10}
 
 colorFondo = "#60656F"
 colorFuente = "#F7F7FF"
-tercerColor = "#279AF1"
-cuartoColor = "#C49991"
+tercerColor = "#008CBA"
+cuartoColor = "#e7e7e7"
+quintoColor = "#4CAF50"
 nombreEscenario = ""
 rutaEscenario = ""
 
@@ -178,12 +179,13 @@ def windowConfigScene():    # Ventana de configuracion de escenario
         # win.launch()
         recognize.init2(currentScene)
 
+
     root.withdraw()
     top = Toplevel()
     #top.geometry("900x600")
     #top.geometry("+400+300")
-    anchoVentana = 900         #Definir medidas de ventana
-    altoVentana = 600
+    anchoVentana = 800       #Definir medidas de ventana
+    altoVentana = 700
     xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
     yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
     posicion = str(anchoVentana) + "x" + str(altoVentana) + \
@@ -247,14 +249,14 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
 
     # Boton para el inicio del reconocimiento
-    b = RoundedButton(top,text="Iniciar reconocimiento",ancho=260 ,radius=20, btnbackground=cuartoColor, btnforeground=colorFuente, clicked=initRecognize)
-    b.grid(row=0, column=2, pady=10)
+    b = RoundedButton(top,text="Iniciar reconocimiento",ancho=260 ,radius=20, btnbackground=cuartoColor, btnforeground="black", clicked=initRecognize)
+    b.grid(row=0, column=0,columnspan=2, pady=10)
     # Boton para guardar cambios
-    b2 = RoundedButton(top,text="Guardar cambios",ancho=240 , radius=20, btnbackground=cuartoColor, btnforeground=colorFuente, clicked=saveScene)
-    b2.grid(row=0, column=3, pady=10)
+    b2 = RoundedButton(top,text="Guardar cambios",ancho=240 , radius=20, btnbackground=quintoColor, btnforeground=colorFuente, clicked=saveScene)
+    b2.grid(row=0, column=2,columnspan=2, pady=10)
     # Boton para actualizar etiquetas
     b3 = RoundedButton(top,text="Actualizar",ancho=240 , radius=20, btnbackground=tercerColor, btnforeground=colorFuente, clicked=refreshScene)
-    b3.grid(row=0, column=5, pady=10)
+    b3.grid(row=0, column=4,columnspan=2, pady=10)
 
     def splitPaths(pathToSplit: str):
         newStrList = pathToSplit.split('/')
@@ -476,21 +478,22 @@ def windowConfigScene():    # Ventana de configuracion de escenario
 
 def windowCreateScene():    # Ventana de creacion de escenario
     top = Toplevel(root)
-    top.geometry("400x200")
-    top.geometry("+400+400")
+    #top.geometry("400x200")
+    #top.geometry("+400+400")
+    anchoVentana = 500         #Definir medidas de ventana
+    altoVentana = 250
+    xVentana = root.winfo_screenwidth() // 2 - anchoVentana // 2  #Definir posición de la ventana
+    yVentana = root.winfo_screenheight() // 2 - altoVentana // 2
+    posicion = str(anchoVentana) + "x" + str(altoVentana) + \
+        "+" + str(xVentana) + "+" + str(yVentana)
+    top.geometry(posicion)
     top.config(bg=colorFondo)
     top.title("Crear un nuevo escenario")
     # frame2 = Frame(top, bd=5, relief="sunken", padx=20, pady=20).pack()
-    l1 = Label(top, 
-                     text="Nombre del escenario:", 
-                     bg=colorFondo, 
-                     fg=defFontColor)
-    l1.grid(row=0,column=0)
-    l2 = Label(top,
-                     text="Fecha de creacion:", 
-                     bg=defBG, 
-                     fg=defFontColor)
-    l2.grid(row=1,column=0)
+    lbl1 = ttk.Label(top, text="Nombre del escenario:", style="Label.TLabel")
+    lbl1.grid(row=0,column=0)
+    lbl2 = ttk.Label(top, text="Fecha de creacion:", style="Label.TLabel")
+    lbl2.grid(row=1,column=0)
     
     def sceneCreation():            # Funcion para crear el nuevo escenario
         global currentScene
@@ -514,10 +517,9 @@ def windowCreateScene():    # Ventana de creacion de escenario
     e1 = Entry(top)
     e1.grid(row=0, column=1, pady=30, padx=20)
     e1.focus()
-    label2 = Label(top, text=date.today(), bg=defBG, fg=defFontColor)
-    label2.grid(row=1, column=1)
-    button = Button(top, text="Crear escenario", command=sceneCreation)
-    button.place(relx=0.4, rely=0.5)
+    lbl3 = ttk.Label(top, text=date.today(), style="Label.TLabel")
+    lbl3.grid(row=1, column=1)
+    RoundedButton(top,text="Crear Escenario",ancho=240 , radius=40, btnbackground=quintoColor, btnforeground=colorFuente, clicked=sceneCreation).grid(row=2,columnspan=2, column=1,pady=40)
 
 def openFile():             # Funcion para abrir archivo de escenario
 
