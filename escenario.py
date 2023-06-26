@@ -198,9 +198,9 @@ class Scene:
         print(actToExec)
         
         if actToExec == self.actions[0]:
-            os.system(str(self._GEST_DICT_[n][2]))
+            os.system(str(self._GEST_DICT_[n][2]))      # Abre archivos
         elif actToExec == self.actions[1]:
-            os.system('start ' + str(self._GEST_DICT_[n][2]))
+            os.system('start ' + str(self._GEST_DICT_[n][2]))   # Abre enlaces
         elif actToExec == self.actions[2]:
             keyboard.tap(Key.right)
         elif actToExec == self.actions[3]:

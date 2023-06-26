@@ -1,0 +1,11 @@
+
+2023-06-24
+0,Abrir archivo,C:/Users/ianni/Documents/TT2---Reconocimiento-de-gestos/tempScenes/2023-06-13Nombre_del_escenario.txt
+1,,
+2,,
+3,,
+4,,
+5,,
+6,,
+7,,
+8,,

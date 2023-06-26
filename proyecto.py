@@ -111,17 +111,17 @@ def secVal3(actualGesture: str):      # Validamos que el gesto dure 3 segundos p
         elif gesto == "Punio":
             pass
 
-
     if lastGesture != actualGesture:
         lastGesture = actualGesture
         gestureSec = timeInSecs
     else:
         if timeInSecs == (gestureSec + 3):
             currentScene.overlayStuff[0] = 'Reconociendo gesto: '+str(actualGesture)
-            lastGesture = ''
-            if actualGesture == "CincoDedos":
+
+            if lastGesture == "CincoDedos":
                 keepOpen = False
-            elif actualGesture == "Punio":
+                lastGesture = ''
+            elif lastGesture == "Punio":
                 currentScene.execAct(1)
             else:           #No hay gesto
                 pass
@@ -168,7 +168,6 @@ def init(cScene: Scene):
     global currentScene
 
     currentScene = cScene
-
     timer = threading.Thread(target=clock)
     timer.start()
 
@@ -270,7 +269,7 @@ def init(cScene: Scene):
         cv2.destroyAllWindows()
 
 def predict(imagen,model):
-  result = np.argmax(model.predict(imagen) > 0.5).astype("int32")
+  result = np.argmax(model.predict(imagen, verbose=0) > 0.5).astype("int32")
   #print(result)
   if result == 0:
     return "CincoDedos"
@@ -341,16 +340,16 @@ def init2(cScene: Scene):
         min_tracking_confidence=0.5
         ) as hands:
 
-        while True:
+        while cap.isOpened() and keepOpen:
             ret, frame = cap.read()
-            if ret == False:
-                break
+            if not ret:
+                continue
             height, width, _ = frame.shape
             frame = cv2.flip(frame, 1)            
             actualGesture = ""
             results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             imagen = frame[0:50,0:50]
-            if results.multi_hand_landmarks is not None:
+            if results.multi_hand_landmarks:
                 imagen = recorteImagen(frame,results,width,height)
                 numpydata = asfarray(imagen,dtype='float32')
                 x = np.expand_dims(numpydata, axis=0)
@@ -369,11 +368,11 @@ def init2(cScene: Scene):
             cv2.imshow("Mano",imagen)  
             cv2.moveWindow("Mano", anchoPantalla-200,altoPantalla-300)
             #cv2.imshow('frame', frame)
-            if cv2.waitKey(1) & 0xFF == 13:
+            if cv2.waitKey(5) & 0xFF == 13:
                 keepOpen = False
                 break
-    cap.release()
-    cv2.destroyAllWindows
+        cap.release()
+        cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     init2(currentScene)
