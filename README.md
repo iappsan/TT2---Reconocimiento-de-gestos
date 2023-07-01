@@ -1,7 +1,7 @@
 # TT2---Reconocimiento-de-gestos
 
 ## Libreias necesarias:
-We need Python 3.7.X
+We need Python 3.8.0
 Mediapipe
 numpy
 pynput
@@ -15,5 +15,4 @@ seaborn
 Actualizar sklearn (pip install -U scikit-learn)
 
 ## Estado actual breve
-El sistema funcioina y ahora estamos implementando tensorflow para 
-un mejor reconocimiento (sustituyendo el metodo de distancia euclidiana)
+El sistema funcioina por medio de una red neuronal y se mejoro la interfaz grafica
